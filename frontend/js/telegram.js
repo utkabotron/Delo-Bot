@@ -12,6 +12,16 @@ const tg = {
         // Expand to full height
         this.app.expand();
 
+        // Disable vertical swipes to prevent viewport resize on keyboard
+        if (this.app.isVersionAtLeast && this.app.isVersionAtLeast('6.1')) {
+            this.app.disableVerticalSwipes();
+        }
+
+        // Lock initial viewport height to prevent keyboard from resizing it
+        const initialHeight = window.innerHeight;
+        document.documentElement.style.setProperty('--initial-vh', `${initialHeight}px`);
+        document.body.style.height = `${initialHeight}px`;
+
         // Apply theme
         this.applyTheme();
 
