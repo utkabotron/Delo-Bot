@@ -29,6 +29,14 @@ from app.infrastructure.persistence.models import (
 
 settings = get_settings()
 
+# Validate production settings on startup
+config_warnings = settings.validate_production_settings()
+if config_warnings:
+    for warning in config_warnings:
+        logger.warning(warning)
+    if settings.environment == "production":
+        logger.error("Production environment detected with configuration warnings! Review settings immediately.")
+
 # Создаём таблицы
 Base.metadata.create_all(bind=engine)
 
