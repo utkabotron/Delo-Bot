@@ -12,7 +12,7 @@ class ProjectModel(Base):
     client = Column(String, default="")
     global_discount = Column(Numeric(10, 2), default=0)
     global_tax = Column(Numeric(10, 2), default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)  # Index for sorting
 
     items = relationship(
         "ProjectItemModel", back_populates="project", cascade="all, delete-orphan"
@@ -23,7 +23,7 @@ class ProjectItemModel(Base):
     __tablename__ = "project_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)  # Index for JOINs
     name = Column(String, nullable=False)
     item_type = Column(String, default="")
     base_price = Column(Numeric(10, 2), default=0)
