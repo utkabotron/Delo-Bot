@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     database_url: str = DATABASE_URL
     cors_origins: str = "http://localhost:8000,http://localhost:5500,http://127.0.0.1:8000"
     app_password: str = "deloculator2024"
+    csrf_secret: str = "change-this-secret-in-production"  # Secret for signing CSRF tokens
 
     class Config:
         env_file = ".env"

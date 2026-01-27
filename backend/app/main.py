@@ -9,8 +9,8 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import get_settings
 from app.database import Base, engine
-from app.presentation.api import projects_router, catalog_router
-from app.presentation.middleware import TelegramMiddleware, AuthMiddleware
+from app.presentation.api import projects_router, catalog_router, security_router
+from app.presentation.middleware import TelegramMiddleware, AuthMiddleware, CSRFMiddleware
 
 # Импортируем модели для создания таблиц
 from app.infrastructure.persistence.models import (
@@ -53,10 +53,14 @@ app.add_middleware(
 # Telegram validation middleware (отключён по умолчанию)
 app.add_middleware(TelegramMiddleware, enabled=False)
 
+# CSRF protection (before auth, but with backward compat)
+app.add_middleware(CSRFMiddleware)
+
 # Auth middleware
 app.add_middleware(AuthMiddleware)
 
 # API routers
+app.include_router(security_router)
 app.include_router(projects_router)
 app.include_router(catalog_router)
 
