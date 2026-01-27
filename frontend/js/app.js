@@ -112,6 +112,8 @@ function projectEditor() {
             cost_price: 0,
             quantity: 1,
         },
+        // Отслеживание редактирования количества
+        editingItemId: null,
 
         async init() {
             tg.init();
@@ -317,6 +319,44 @@ function projectEditor() {
             } catch (error) {
                 console.error('Failed to save quantity:', error);
                 await this.loadProject(this.project.id);
+                tg.hapticFeedback('error');
+            }
+        },
+
+        async saveQuantityFromButton(item) {
+            // Получаем значение из input
+            const input = document.getElementById(`qty-input-${item.id}`);
+            if (!input) return;
+
+            const newValue = input.value;
+            const newQuantity = parseInt(newValue);
+
+            // Validation
+            if (isNaN(newQuantity) || newQuantity < 1) {
+                await this.loadProject(this.project.id);
+                this.editingItemId = null;
+                tg.hapticFeedback('error');
+                return;
+            }
+
+            // If quantity unchanged, just close editor
+            if (newQuantity === item.quantity) {
+                this.editingItemId = null;
+                input.blur();
+                return;
+            }
+
+            // Save via API
+            try {
+                await api.projects.updateItemQuantity(this.project.id, item.id, newQuantity);
+                await this.loadProject(this.project.id);
+                this.editingItemId = null;
+                input.blur();
+                tg.hapticFeedback('success');
+            } catch (error) {
+                console.error('Failed to save quantity:', error);
+                await this.loadProject(this.project.id);
+                this.editingItemId = null;
                 tg.hapticFeedback('error');
             }
         },
