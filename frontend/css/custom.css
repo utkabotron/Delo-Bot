@@ -136,6 +136,11 @@ textarea:read-only {
     color: #5a5a5a !important;  /* WCAG AA compliant on #f7f7f7: contrast ~4.6:1 */
 }
 
+.bg-gray-100.text-gray-500 {
+    background-color: var(--tg-secondary-bg-color) !important;
+    color: var(--tg-hint-color) !important;  /* #6c757d, WCAG AA compliant: contrast 5.74:1 */
+}
+
 /* Summary panel labels - use hint color for secondary text */
 .shadow-lg .text-gray-500 {
     color: var(--tg-hint-color) !important;

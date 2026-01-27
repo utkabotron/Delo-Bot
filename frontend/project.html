@@ -92,37 +92,46 @@
 
     <!-- Summary Panel -->
     <div class="flex-shrink-0 bg-white border-t shadow-lg z-20">
-        <div class="p-4 space-y-2">
-            <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Подытог</span>
-                <span x-text="formatMoney(project?.summary?.subtotal || 0) + ' ₽'"></span>
+        <div class="p-4 pb-6">
+            <!-- Секция 1: Подытог + Скидки/Налоги -->
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Подытог</span>
+                    <span x-text="formatMoney(project?.summary?.subtotal || 0) + ' ₽'"></span>
+                </div>
+                <template x-if="project?.global_discount > 0">
+                    <div class="flex justify-between text-sm text-orange-600">
+                        <span>Скидка (<span x-text="project.global_discount"></span>%)</span>
+                        <span x-text="'-' + formatMoney((project.summary.subtotal * project.global_discount / 100)) + ' ₽'"></span>
+                    </div>
+                </template>
+                <template x-if="project?.global_tax > 0">
+                    <div class="flex justify-between text-sm text-orange-600">
+                        <span>Налог (<span x-text="project.global_tax"></span>%)</span>
+                        <span x-text="'-' + formatMoney((project.summary.subtotal * (1 - project.global_discount/100) * project.global_tax / 100)) + ' ₽'"></span>
+                    </div>
+                </template>
             </div>
-            <template x-if="project?.global_discount > 0">
-                <div class="flex justify-between text-sm text-orange-600">
-                    <span>Скидка (<span x-text="project.global_discount"></span>%)</span>
-                    <span x-text="'-' + formatMoney((project.summary.subtotal * project.global_discount / 100)) + ' ₽'"></span>
-                </div>
-            </template>
-            <template x-if="project?.global_tax > 0">
-                <div class="flex justify-between text-sm text-orange-600">
-                    <span>Налог (<span x-text="project.global_tax"></span>%)</span>
-                    <span x-text="'-' + formatMoney((project.summary.subtotal * (1 - project.global_discount/100) * project.global_tax / 100)) + ' ₽'"></span>
-                </div>
-            </template>
-            <div class="border-t pt-2 flex justify-between font-bold text-lg">
+
+            <!-- Секция 2: Итого (главное) -->
+            <div class="border-t pt-4 mt-3 flex justify-between font-bold text-lg">
                 <span>Итого</span>
                 <span x-text="formatMoney(project?.summary?.revenue || 0) + ' ₽'"></span>
             </div>
-            <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Себестоимость</span>
-                <span class="text-gray-600" x-text="formatMoney(project?.summary?.total_cost || 0) + ' ₽'"></span>
-            </div>
-            <div class="flex justify-between font-medium">
-                <span>Прибыль</span>
-                <span :class="(project?.summary?.profit || 0) >= 0 ? 'text-green-600' : 'text-red-600'">
-                    <span x-text="formatMoney(project?.summary?.profit || 0) + ' ₽'"></span>
-                    (<span x-text="parseFloat(project?.summary?.margin || 0).toFixed(1)"></span>%)
-                </span>
+
+            <!-- Секция 3: Себестоимость + Прибыль -->
+            <div class="space-y-2 pt-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Себестоимость</span>
+                    <span class="text-gray-600" x-text="formatMoney(project?.summary?.total_cost || 0) + ' ₽'"></span>
+                </div>
+                <div class="border-t pt-2 flex justify-between font-medium">
+                    <span>Прибыль</span>
+                    <span :class="(project?.summary?.profit || 0) >= 0 ? 'text-green-600' : 'text-red-600'">
+                        <span x-text="formatMoney(project?.summary?.profit || 0) + ' ₽'"></span>
+                        (<span x-text="parseFloat(project?.summary?.margin || 0).toFixed(1)"></span>%)
+                    </span>
+                </div>
             </div>
         </div>
     </div>
