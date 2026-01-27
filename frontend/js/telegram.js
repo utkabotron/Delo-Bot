@@ -15,8 +15,32 @@ const tg = {
         // Apply theme
         this.applyTheme();
 
+        // Apply safe area insets
+        this.applySafeArea();
+
         // Ready signal
         this.app.ready();
+    },
+
+    applySafeArea() {
+        if (!this.app) return;
+
+        const root = document.documentElement;
+
+        // Content safe area (area below Telegram header)
+        const contentInset = this.app.contentSafeAreaInset || {};
+        const safeInset = this.app.safeAreaInset || {};
+
+        // Use content safe area top (space below Telegram's header)
+        const topInset = (contentInset.top || 0) + (safeInset.top || 0);
+        root.style.setProperty('--tg-content-safe-area-top', `${topInset}px`);
+        root.style.setProperty('--tg-safe-area-bottom', `${safeInset.bottom || 0}px`);
+
+        // Add padding to header elements
+        const headers = document.querySelectorAll('header');
+        headers.forEach(header => {
+            header.style.paddingTop = `${topInset}px`;
+        });
     },
 
     applyTheme() {
