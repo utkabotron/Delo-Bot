@@ -62,9 +62,7 @@
                         </button>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-500">
-                            <span x-text="project.items.length"></span> позиций
-                        </span>
+                        <span class="text-gray-500" x-text="formatItems(project.items.length)"></span>
                         <span class="font-medium" :class="project.summary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
                             <span x-text="formatMoney(project.summary.revenue)"></span> ₽
                         </span>
