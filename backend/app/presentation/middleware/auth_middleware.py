@@ -3,6 +3,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from app.config import get_settings
+from app.utils.password import verify_password, is_hashed
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -26,11 +27,23 @@ class AuthMiddleware(BaseHTTPMiddleware):
         password = request.headers.get("X-Auth-Password")
         settings = get_settings()
 
-        if password != settings.app_password:
-            return JSONResponse(
-                status_code=401,
-                content={"detail": "Неверный пароль"}
-            )
+        # Поддержка как хешированных, так и plain text паролей (backward compatibility)
+        stored_password = settings.app_password
+
+        if is_hashed(stored_password):
+            # Password в config хеширован - используем bcrypt verify
+            if not password or not verify_password(password, stored_password):
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": "Неверный пароль"}
+                )
+        else:
+            # Password в config plain text - прямое сравнение (legacy mode)
+            if password != stored_password:
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": "Неверный пароль"}
+                )
 
         return await call_next(request)
 
