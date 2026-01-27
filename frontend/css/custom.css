@@ -137,27 +137,43 @@ textarea:read-only {
     color: #5a5a5a !important;  /* WCAG AA compliant on #f7f7f7: contrast ~4.6:1 */
 }
 
-/* Summary panel - ensure all text is visible in both light and dark themes */
-.shadow-lg .text-gray-500,
+/* Summary panel labels - use hint color for secondary text */
+.shadow-lg .text-gray-500 {
+    color: var(--tg-hint-color) !important;
+}
+
 .shadow-lg .text-gray-600 {
     color: var(--tg-subtitle-text-color) !important;
-    opacity: 0.9;  /* Slightly dimmed but still visible */
 }
 
-/* Important text (like "Итого", "Прибыль") - always use main text color for maximum visibility */
-.font-bold,
-.font-medium {
+/* Keep colored accents for profit/loss - bright and visible! */
+.text-green-600,
+span.text-green-600 {
+    color: #10b981 !important;  /* Bright green for positive profit */
+}
+
+.text-red-600,
+span.text-red-600 {
+    color: #ef4444 !important;  /* Bright red for negative profit */
+}
+
+.text-orange-600,
+span.text-orange-600 {
+    color: #f97316 !important;  /* Bright orange for discounts/taxes */
+}
+
+/* Ensure monetary values and important text are bright and visible, BUT preserve colors */
+.shadow-lg .font-bold:not([class*="text-green"]):not([class*="text-red"]):not([class*="text-orange"]),
+.shadow-lg .font-medium:not([class*="text-green"]):not([class*="text-red"]):not([class*="text-orange"]),
+.shadow-lg .text-lg {
     color: var(--tg-text-color) !important;
 }
 
-.font-bold span:not([class*="text-"]),
-.font-medium span:not([class*="text-"]) {
-    color: var(--tg-text-color) !important;
-}
-
-/* Ensure all span elements in summary panel without specific color inherit properly */
-.shadow-lg span:not([class*="text-"]):not([class*="bg-"]) {
-    color: var(--tg-text-color) !important;
+/* Spans with colors inside font-medium should keep their color */
+.font-medium > span[class*="text-green"],
+.font-medium > span[class*="text-red"],
+.font-medium > span[class*="text-orange"] {
+    /* Color already defined above, just ensure it's not overridden */
 }
 
 /* Prevent pull-to-refresh on mobile */
