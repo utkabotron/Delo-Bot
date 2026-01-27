@@ -77,11 +77,26 @@ frontend/
 ├── index.html      # Список проектов (dashboard)
 ├── project.html    # Редактор проекта
 ├── login.html      # Страница входа
+├── css/custom.css  # Кастомные стили + CSS переменные Telegram
 └── js/
     ├── api.js      # API клиент (fetch wrapper)
     ├── app.js      # Alpine.js компоненты (dashboard, projectEditor)
     └── telegram.js # Telegram WebApp интеграция
 ```
+
+## Telegram Mini App
+
+Интеграция через `telegram.js`:
+- `tg.init()` — инициализация (expand, theme, safe area)
+- `tg.applySafeArea()` — отступы под системные элементы Telegram
+- `tg.hapticFeedback(type)` — вибрация (light/medium/heavy/success/error)
+- `tg.showBackButton()` / `tg.hideBackButton()` — кнопка "назад"
+
+Настройка бота в @BotFather:
+- `/mybots` → выбрать бота → **Mini Apps** → **Menu Button**
+- URL: `https://delo.brdg.tools`
+
+Токен бота хранится в `.env` → `TELEGRAM_BOT_TOKEN`
 
 ## API Endpoints
 
@@ -92,6 +107,21 @@ frontend/
 - `GET /api/catalog/grouped` — каталог сгруппированный по названию
 - `POST /api/catalog/sync` — синхронизация с Google Sheets
 
+## Deployment
+
+- **Production URL:** https://delo.brdg.tools
+- **Server:** Timeweb Cloud VPS (176.57.214.150)
+- **Auto-deploy:** Push to `main` → GitHub Actions → SSH deploy
+- Подробнее: см. `DEPLOY.md`
+
+Полезные команды на сервере:
+```bash
+sudo journalctl -u delo-bot -f     # Логи
+sudo systemctl restart delo-bot    # Перезапуск
+curl -X POST -H 'X-Auth-Password: PASSWORD' http://127.0.0.1:8000/api/catalog/sync  # Синхронизация каталога
+```
+
 ## Git Configuration
 
+- GitHub: https://github.com/utkabotron/Delo-Bot (public)
 - GitHub account: pavelbrick@gmail.com
