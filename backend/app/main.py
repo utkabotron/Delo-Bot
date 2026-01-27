@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.exceptions import RequestValidationError
 from pathlib import Path
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -16,6 +17,8 @@ from app.presentation.middleware import (
     CSRFMiddleware,
     SecurityHeadersMiddleware,
 )
+from app.utils.exceptions import DelocatorException
+from app.utils.logging import logger
 
 # Импортируем модели для создания таблиц
 from app.infrastructure.persistence.models import (
@@ -44,6 +47,76 @@ app.state.limiter = limiter
 
 # Add rate limit exceeded handler
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+# Global exception handlers
+@app.exception_handler(DelocatorException)
+async def delocator_exception_handler(request: Request, exc: DelocatorException):
+    """Handle custom application exceptions."""
+    logger.warning(
+        f"Application error: {exc.message}",
+        extra={
+            "path": request.url.path,
+            "method": request.method,
+            "status_code": exc.status_code,
+        }
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """Handle FastAPI HTTP exceptions."""
+    logger.warning(
+        f"HTTP error: {exc.detail}",
+        extra={
+            "path": request.url.path,
+            "method": request.method,
+            "status_code": exc.status_code,
+        }
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle Pydantic validation errors."""
+    logger.warning(
+        f"Validation error: {exc.errors()}",
+        extra={
+            "path": request.url.path,
+            "method": request.method,
+            "errors": exc.errors(),
+        }
+    )
+    return JSONResponse(
+        status_code=422,
+        content={"detail": "Validation error", "errors": exc.errors()}
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Handle all unhandled exceptions."""
+    logger.error(
+        f"Unhandled exception: {str(exc)}",
+        exc_info=True,
+        extra={
+            "path": request.url.path,
+            "method": request.method,
+        }
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
+
 
 # CORS
 origins = [o.strip() for o in settings.cors_origins.split(",")]

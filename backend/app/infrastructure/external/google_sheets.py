@@ -4,6 +4,8 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from app.domain.entities import CatalogProduct
 from app.config import get_settings, PROJECT_ROOT
+from app.utils.logging import logger
+from app.utils.exceptions import ExternalServiceException
 
 
 class GoogleSheetsService:
@@ -36,8 +38,8 @@ class GoogleSheetsService:
                 )
                 self._service = build("sheets", "v4", credentials=credentials)
             except Exception as e:
-                print(f"Google Sheets auth error: {e}")
-                return None
+                logger.error(f"Google Sheets authentication error: {e}", exc_info=True)
+                raise ExternalServiceException(f"Failed to authenticate with Google Sheets: {str(e)}")
         return self._service
 
     def _parse_price(self, value: str) -> Decimal:
@@ -51,10 +53,16 @@ class GoogleSheetsService:
             return Decimal("0")
 
     def fetch_catalog(self) -> list[CatalogProduct]:
-        """Загружает каталог из Google Sheets"""
+        """
+        Загружает каталог из Google Sheets.
+
+        Returns:
+            List of catalog products
+
+        Raises:
+            ExternalServiceException: If Google Sheets API fails
+        """
         service = self._get_service()
-        if not service:
-            return []
 
         try:
             range_name = f"'{self.SHEET_NAME}'!{self.RANGE}"
@@ -91,7 +99,8 @@ class GoogleSheetsService:
                 )
                 products.append(product)
 
+            logger.info(f"Successfully fetched {len(products)} products from Google Sheets")
             return products
         except Exception as e:
-            print(f"Google Sheets fetch error: {e}")
-            return []
+            logger.error(f"Failed to fetch catalog from Google Sheets: {e}", exc_info=True)
+            raise ExternalServiceException(f"Failed to fetch catalog: {str(e)}")

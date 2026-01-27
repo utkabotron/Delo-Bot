@@ -37,6 +37,7 @@ Thumbs.db
 
 # Logs
 *.log
+logs/
 
 # Keep data folder but ignore db files
 !data/.gitkeep
