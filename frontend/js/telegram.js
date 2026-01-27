@@ -52,8 +52,17 @@ const tg = {
         if (theme.bg_color) {
             root.style.setProperty('--tg-bg-color', theme.bg_color);
         }
+        if (theme.secondary_bg_color) {
+            root.style.setProperty('--tg-secondary-bg-color', theme.secondary_bg_color);
+        }
+        if (theme.section_bg_color) {
+            root.style.setProperty('--tg-section-bg-color', theme.section_bg_color);
+        }
         if (theme.text_color) {
             root.style.setProperty('--tg-text-color', theme.text_color);
+        }
+        if (theme.subtitle_text_color) {
+            root.style.setProperty('--tg-subtitle-text-color', theme.subtitle_text_color);
         }
         if (theme.hint_color) {
             root.style.setProperty('--tg-hint-color', theme.hint_color);
@@ -67,6 +76,8 @@ const tg = {
         if (theme.button_text_color) {
             root.style.setProperty('--tg-button-text-color', theme.button_text_color);
         }
+
+        console.log('Telegram theme applied:', theme);
     },
 
     showMainButton(text, callback) {

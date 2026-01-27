@@ -6,12 +6,135 @@
     --tg-link-color: #2481cc;
     --tg-button-color: #2481cc;
     --tg-button-text-color: #ffffff;
+    --tg-secondary-bg-color: #f7f7f7;
+    --tg-section-bg-color: #ffffff;
+    --tg-subtitle-text-color: #999999;
 }
 
 /* Apply Telegram theme when available */
 body {
-    background-color: var(--tg-bg-color);
-    color: var(--tg-text-color);
+    background-color: var(--tg-bg-color) !important;
+    color: var(--tg-text-color) !important;
+}
+
+/* Override Tailwind classes to use Telegram theme */
+.bg-gray-100 {
+    background-color: var(--tg-secondary-bg-color) !important;
+}
+
+.bg-white {
+    background-color: var(--tg-section-bg-color) !important;
+}
+
+.text-gray-800 {
+    color: var(--tg-text-color) !important;
+}
+
+.text-gray-700 {
+    color: var(--tg-text-color) !important;
+}
+
+.text-gray-600 {
+    color: var(--tg-subtitle-text-color) !important;
+}
+
+.text-gray-500 {
+    color: var(--tg-hint-color) !important;
+}
+
+.text-gray-400 {
+    color: var(--tg-hint-color) !important;
+    opacity: 0.6;
+}
+
+/* Borders using hint color */
+.border,
+.border-t,
+.border-b,
+.border-l,
+.border-r {
+    border-color: var(--tg-hint-color) !important;
+    opacity: 0.2;
+}
+
+/* Buttons */
+.bg-blue-500,
+.bg-blue-600 {
+    background-color: var(--tg-button-color) !important;
+}
+
+.text-blue-500 {
+    color: var(--tg-link-color) !important;
+}
+
+/* Input fields */
+input,
+select,
+textarea {
+    background-color: var(--tg-section-bg-color) !important;
+    color: var(--tg-text-color) !important;
+    border-color: var(--tg-hint-color) !important;
+    opacity: 1;
+}
+
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+    color: var(--tg-hint-color) !important;
+    opacity: 0.6;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    opacity: 0.5;
+}
+
+/* Modals and overlays */
+.bg-black\/50 {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Readonly fields should be slightly dimmed */
+input:read-only,
+select:read-only,
+textarea:read-only {
+    background-color: var(--tg-secondary-bg-color) !important;
+    color: var(--tg-subtitle-text-color) !important;
+}
+
+/* Shadow adjustments for better visibility in dark theme */
+.shadow-sm,
+.shadow,
+.shadow-md,
+.shadow-lg {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Hover states */
+.hover\:bg-gray-50:hover {
+    background-color: var(--tg-secondary-bg-color) !important;
+    opacity: 0.8;
+}
+
+.hover\:bg-gray-100:hover {
+    background-color: var(--tg-secondary-bg-color) !important;
+    opacity: 0.9;
+}
+
+.hover\:bg-gray-200:hover {
+    background-color: var(--tg-secondary-bg-color) !important;
+}
+
+.hover\:bg-blue-50:hover {
+    background-color: var(--tg-button-color) !important;
+    opacity: 0.1;
+}
+
+/* Specific fixes for badges/pills */
+.bg-gray-100.text-gray-600 {
+    background-color: var(--tg-secondary-bg-color) !important;
+    color: var(--tg-subtitle-text-color) !important;
 }
 
 /* Prevent pull-to-refresh on mobile */
