@@ -137,6 +137,29 @@ textarea:read-only {
     color: #5a5a5a !important;  /* WCAG AA compliant on #f7f7f7: contrast ~4.6:1 */
 }
 
+/* Summary panel - ensure all text is visible in both light and dark themes */
+.shadow-lg .text-gray-500,
+.shadow-lg .text-gray-600 {
+    color: var(--tg-subtitle-text-color) !important;
+    opacity: 0.9;  /* Slightly dimmed but still visible */
+}
+
+/* Important text (like "Итого", "Прибыль") - always use main text color for maximum visibility */
+.font-bold,
+.font-medium {
+    color: var(--tg-text-color) !important;
+}
+
+.font-bold span:not([class*="text-"]),
+.font-medium span:not([class*="text-"]) {
+    color: var(--tg-text-color) !important;
+}
+
+/* Ensure all span elements in summary panel without specific color inherit properly */
+.shadow-lg span:not([class*="text-"]):not([class*="bg-"]) {
+    color: var(--tg-text-color) !important;
+}
+
 /* Prevent pull-to-refresh on mobile */
 html, body {
     overscroll-behavior: none;
