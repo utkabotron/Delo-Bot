@@ -185,9 +185,11 @@ html, body {
     overscroll-behavior: none;
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling and dynamic viewport height */
 html {
     scroll-behavior: smooth;
+    height: 100dvh; /* Use dynamic viewport height to prevent keyboard resize */
+    height: 100vh; /* Fallback for older browsers */
 }
 
 /* Native iOS scrolling */

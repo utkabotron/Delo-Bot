@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/custom.css">
 </head>
-<body class="bg-gray-100 h-screen flex flex-col overflow-hidden" x-data="projectEditor()" x-init="init()">
+<body class="bg-gray-100 flex flex-col overflow-hidden" style="height: 100dvh; height: 100vh;" x-data="projectEditor()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header -->
     <header class="bg-white shadow-sm flex-shrink-0 z-10 safe-top">
@@ -33,7 +33,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto native-scroll p-4">
+    <main class="flex-1 overflow-y-auto native-scroll p-4 pb-40">
         <!-- Add Button -->
         <button
             @click="openAddItemModal()"
@@ -113,7 +113,7 @@
     </main>
 
     <!-- Summary Panel -->
-    <div class="flex-shrink-0 bg-white border-t shadow-lg z-20">
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-20 safe-bottom">
         <div class="p-4 pb-8">
             <!-- Секция 1: Подытог + Скидки/Налоги -->
             <div class="space-y-2">

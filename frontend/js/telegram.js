@@ -17,11 +17,6 @@ const tg = {
             this.app.disableVerticalSwipes();
         }
 
-        // Lock initial viewport height to prevent keyboard from resizing it
-        const initialHeight = window.innerHeight;
-        document.documentElement.style.setProperty('--initial-vh', `${initialHeight}px`);
-        document.body.style.height = `${initialHeight}px`;
-
         // Apply theme
         this.applyTheme();
 
