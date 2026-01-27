@@ -112,8 +112,6 @@ function projectEditor() {
             cost_price: 0,
             quantity: 1,
         },
-        // Редактирование количества
-        editingItemId: null,
 
         async init() {
             tg.init();
@@ -295,32 +293,19 @@ function projectEditor() {
             }
         },
 
-        startEditQuantity(item) {
-            this.editingItemId = item.id;
-            tg.hapticFeedback('light');
-            // Focus input after Alpine renders it
-            setTimeout(() => {
-                const input = document.getElementById(`qty-${item.id}`);
-                if (input) {
-                    input.focus();
-                    input.select();
-                }
-            }, 50);
-        },
-
-        async saveQuantity(item, newValue) {
+        async saveQuantityDirect(item, newValue) {
             const newQuantity = parseInt(newValue);
 
             // Validation
             if (isNaN(newQuantity) || newQuantity < 1) {
-                this.cancelEditQuantity();
+                // Restore original value
+                await this.loadProject(this.project.id);
                 tg.hapticFeedback('error');
                 return;
             }
 
-            // If quantity unchanged, just close editor
+            // If quantity unchanged, do nothing
             if (newQuantity === item.quantity) {
-                this.cancelEditQuantity();
                 return;
             }
 
@@ -328,17 +313,12 @@ function projectEditor() {
             try {
                 await api.projects.updateItemQuantity(this.project.id, item.id, newQuantity);
                 await this.loadProject(this.project.id);
-                this.editingItemId = null;
                 tg.hapticFeedback('success');
             } catch (error) {
                 console.error('Failed to save quantity:', error);
-                this.cancelEditQuantity();
+                await this.loadProject(this.project.id);
                 tg.hapticFeedback('error');
             }
-        },
-
-        cancelEditQuantity() {
-            this.editingItemId = null;
         },
 
         async updateProject() {
