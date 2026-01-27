@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.application.dto import CatalogProductDTO, CatalogProductGroupedDTO
@@ -7,6 +7,13 @@ from app.infrastructure.persistence.repositories import SQLAlchemyCatalogReposit
 from app.infrastructure.external import GoogleSheetsService
 
 router = APIRouter(prefix="/api/catalog", tags=["catalog"])
+
+# Import limiter from main app (will be set via dependency)
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+# Create local limiter for specific endpoints
+limiter = Limiter(key_func=get_remote_address)
 
 
 def get_use_cases(db: Session = Depends(get_db)) -> CatalogUseCases:
@@ -32,11 +39,17 @@ def search_catalog(
 
 
 @router.post("/sync")
+@limiter.limit("5/minute")
 def sync_catalog(
+    request: Request,
     db: Session = Depends(get_db),
     use_cases: CatalogUseCases = Depends(get_use_cases),
 ):
-    """Синхронизация каталога из Google Sheets"""
+    """
+    Синхронизация каталога из Google Sheets.
+
+    Rate limit: 5 requests per minute (stricter than default 100/min for other endpoints).
+    """
     sheets_service = GoogleSheetsService()
     products = sheets_service.fetch_catalog()
 

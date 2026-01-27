@@ -1,8 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pathlib import Path
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from app.config import get_settings
 from app.database import Base, engine
@@ -21,11 +24,21 @@ settings = get_settings()
 # Создаём таблицы
 Base.metadata.create_all(bind=engine)
 
+# Rate limiter configuration
+# Default: 100 requests per minute for all API endpoints
+limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
+
 app = FastAPI(
     title="Deloculator API",
     description="Telegram Mini App для расчёта стоимости заказов",
     version="1.0.0",
 )
+
+# Add rate limiter to app state
+app.state.limiter = limiter
+
+# Add rate limit exceeded handler
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS
 origins = [o.strip() for o in settings.cors_origins.split(",")]
