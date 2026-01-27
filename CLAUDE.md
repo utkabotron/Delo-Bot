@@ -130,6 +130,7 @@ frontend/
 
 Интеграция через `telegram.js`:
 - `tg.init()` — инициализация (expand, theme, safe area)
+- `tg.applyTheme()` — автоматическое применение Telegram theme (светлая/тёмная)
 - `tg.applySafeArea()` — отступы под системные элементы Telegram
 - `tg.hapticFeedback(type)` — вибрация (light/medium/heavy/success/error)
 - `tg.showBackButton()` / `tg.hideBackButton()` — кнопка "назад"
@@ -139,6 +140,30 @@ frontend/
 - URL: `https://delo.brdg.tools`
 
 Токен бота хранится в `.env` → `TELEGRAM_BOT_TOKEN`
+
+### Темизация и Accessibility
+
+**CSS Переменные Telegram (`frontend/css/custom.css`):**
+- `--tg-bg-color` — основной фон
+- `--tg-section-bg-color` — фон карточек/секций
+- `--tg-secondary-bg-color` — вторичный фон (badges, disabled fields)
+- `--tg-text-color` — основной цвет текста
+- `--tg-subtitle-text-color` — цвет подзаголовков (#707070, контраст 4.54:1)
+- `--tg-hint-color` — цвет подсказок/hints (#6c757d, контраст 5.74:1)
+- `--tg-link-color` / `--tg-button-color` — цвет ссылок и кнопок
+
+**WCAG AA Compliance:**
+- Все текстовые цвета соответствуют минимальной контрастности 4.5:1
+- Использованы `rgba()` для прозрачности границ (НЕ `opacity` на элементе!)
+- Яркие цветные акценты (Apple-style):
+  - Прибыль: `#10b981` (ярко-зелёный)
+  - Убыток: `#ef4444` (ярко-красный)
+  - Скидки/Налоги: `#f97316` (оранжевый)
+
+**Важные CSS правила:**
+- Tailwind классы (bg-white, text-gray-*) переопределены для использования Telegram theme
+- `.border-*` использует `rgba()` для прозрачности, а НЕ `opacity` (чтобы не влиять на дочерние элементы)
+- Цветные акценты (`text-green-600`, `text-red-600`) всегда яркие через `!important`
 
 ## API Endpoints
 
@@ -208,6 +233,47 @@ curl -X POST -H 'X-Auth-Password: PASSWORD' http://127.0.0.1:8000/api/catalog/sy
 - Backend отдаёт статику из `/frontend` через `StaticFiles` и `FileResponse`
 - CSS и JS монтируются как `/css` и `/js`
 - HTML страницы отдаются через routes: `/`, `/login`, `/project/{id}`
+
+## Распространённые проблемы и решения
+
+### Проблемы с темизацией
+
+**Проблема:** Текст не виден в тёмной теме Telegram
+- **Причина:** Hardcoded цвета вместо CSS переменных Telegram
+- **Решение:** Использовать `var(--tg-text-color)`, `var(--tg-hint-color)` и т.д.
+- **Файл:** `frontend/css/custom.css`
+
+**Проблема:** "Серая полупрозрачная плашка" или приглушённые цвета
+- **Причина:** Использование `opacity` на родительском элементе (наследуется на детей)
+- **Решение:** Использовать `rgba()` с альфа-каналом вместо `opacity`
+- **Пример:**
+  ```css
+  /* Плохо - делает весь элемент прозрачным */
+  .border-t {
+      border-color: #6c757d;
+      opacity: 0.35;
+  }
+
+  /* Хорошо - прозрачен только цвет границы */
+  .border-t {
+      border-color: rgba(108, 117, 125, 0.35);
+  }
+  ```
+
+**Проблема:** Контрастность не соответствует WCAG AA
+- **Требования:** Минимум 4.5:1 для обычного текста, 3:1 для крупного (18pt+)
+- **Инструменты:** WebAIM Contrast Checker, Chrome DevTools
+- **Решение:** Использовать более тёмные оттенки серого (#6c757d вместо #999999)
+
+### Проблемы с deployment
+
+**Проблема:** Изменения не применяются после деплоя
+- **Решение:** Проверить что сервис перезапущен: `sudo systemctl status delo-bot`
+- **Проверить:** `git log -1` на сервере совпадает с локальным
+
+**Проблема:** CSS не обновляется в браузере
+- **Причина:** Кеш браузера
+- **Решение:** Hard refresh (Cmd+Shift+R на Mac, Ctrl+Shift+R на Windows)
 
 ## Git Configuration
 
