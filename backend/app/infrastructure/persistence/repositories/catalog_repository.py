@@ -1,5 +1,6 @@
 from decimal import Decimal
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.sqlite import insert
 from app.domain.entities import CatalogProduct
 from app.domain.repositories import ICatalogRepository
 from app.infrastructure.persistence.models import CatalogProductModel
@@ -42,17 +43,36 @@ class SQLAlchemyCatalogRepository(ICatalogRepository):
         return self._to_entity(model)
 
     def sync(self, products: list[CatalogProduct]) -> int:
-        # Очищаем текущий каталог и загружаем новый
-        self.db.query(CatalogProductModel).delete()
+        """
+        Sync catalog using upsert (insert or update) strategy.
+        Preserves existing product IDs and only updates changed data.
+        """
+        if not products:
+            return 0
 
-        for product in products:
-            model = CatalogProductModel(
-                name=product.name,
-                product_type=product.product_type,
-                base_price=product.base_price,
-                cost_price=product.cost_price,
-            )
-            self.db.add(model)
+        # Prepare data for bulk upsert
+        product_data = [
+            {
+                'name': p.name,
+                'product_type': p.product_type,
+                'base_price': p.base_price,
+                'cost_price': p.cost_price,
+            }
+            for p in products
+        ]
 
+        # Use SQLite's INSERT OR REPLACE via on_conflict_do_update
+        # This preserves IDs when (name, product_type) matches
+        stmt = insert(CatalogProductModel).values(product_data)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=['name', 'product_type'],  # Unique constraint columns
+            set_={
+                'base_price': stmt.excluded.base_price,
+                'cost_price': stmt.excluded.cost_price,
+            }
+        )
+
+        self.db.execute(stmt)
         self.db.commit()
+
         return len(products)
