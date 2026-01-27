@@ -24,6 +24,13 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Native iOS scrolling */
+.native-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+
 /* Hide scrollbar but keep functionality */
 .hide-scrollbar::-webkit-scrollbar {
     display: none;

@@ -117,3 +117,18 @@ class ProjectUseCases:
 
     def remove_item(self, item_id: int) -> bool:
         return self.repository.remove_item(item_id)
+
+    def update_item_quantity(self, item_id: int, quantity: int) -> Optional[ProjectItemResponseDTO]:
+        item = self.repository.update_item_quantity(item_id, quantity)
+        if not item:
+            return None
+        return ProjectItemResponseDTO(
+            id=item.id,
+            name=item.name,
+            item_type=item.item_type,
+            base_price=item.base_price,
+            cost_price=item.cost_price,
+            quantity=item.quantity,
+            subtotal=item.subtotal,
+            total_cost=item.total_cost,
+        )

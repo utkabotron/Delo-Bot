@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/css/custom.css">
 </head>
 <body class="bg-gray-100 min-h-screen" x-data="dashboard()" x-init="init()">
+    <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-10">
         <div class="px-4 py-3 flex items-center justify-between">
@@ -72,7 +73,7 @@
                             Прибыль: <span x-text="formatMoney(project.summary.profit)"></span> ₽
                         </span>
                         <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            Маржа: <span x-text="project.summary.margin.toFixed(1)"></span>%
+                            Маржа: <span x-text="parseFloat(project.summary.margin || 0).toFixed(1)"></span>%
                         </span>
                     </div>
                 </div>

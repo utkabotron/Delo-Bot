@@ -10,6 +10,12 @@ const api = {
             ...options.headers,
         };
 
+        // Add auth password if available
+        const password = localStorage.getItem('app_password');
+        if (password) {
+            headers['X-Auth-Password'] = password;
+        }
+
         // Add Telegram initData if available
         if (window.Telegram?.WebApp?.initData) {
             headers['X-Telegram-Init-Data'] = window.Telegram.WebApp.initData;
@@ -72,6 +78,13 @@ const api = {
         removeItem(projectId, itemId) {
             return api.request(`/projects/${projectId}/items/${itemId}`, {
                 method: 'DELETE',
+            });
+        },
+
+        updateItemQuantity(projectId, itemId, quantity) {
+            return api.request(`/projects/${projectId}/items/${itemId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ quantity }),
             });
         },
     },

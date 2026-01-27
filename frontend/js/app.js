@@ -5,6 +5,13 @@ function formatMoney(value) {
     return num.toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
+function getBaseName(name, itemType) {
+    if (itemType && name.endsWith(itemType)) {
+        return name.slice(0, -itemType.length).trim();
+    }
+    return name;
+}
+
 // Dashboard Component
 function dashboard() {
     return {
@@ -262,16 +269,8 @@ function projectEditor() {
                 return;
             }
 
-            // Remove and re-add with new quantity
             try {
-                await api.projects.removeItem(this.project.id, item.id);
-                await api.projects.addItem(this.project.id, {
-                    name: item.name,
-                    item_type: item.item_type,
-                    base_price: item.base_price,
-                    cost_price: item.cost_price,
-                    quantity: newQuantity,
-                });
+                await api.projects.updateItemQuantity(this.project.id, item.id, newQuantity);
                 await this.loadProject(this.project.id);
                 tg.hapticFeedback('light');
             } catch (error) {

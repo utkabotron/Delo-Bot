@@ -62,6 +62,36 @@ Margin   = Profit / Revenue × 100%
 - Колонка C: Название, D: Тип, Q: Себестоимость, R: База (цена)
 - Настройки в `infrastructure/external/google_sheets.py`
 
+## Аутентификация
+
+Простая аутентификация по паролю:
+- Пароль задаётся в `config.py` → `app_password` (по умолчанию: `deloculator2024`)
+- Frontend хранит пароль в `localStorage` и отправляет в заголовке `X-Auth-Password`
+- AuthMiddleware защищает только `/api/*` эндпоинты (кроме `/api/health`)
+- HTML-страницы публичные, но делают редирект на `/login` если нет пароля в localStorage
+
+## Frontend
+
+```
+frontend/
+├── index.html      # Список проектов (dashboard)
+├── project.html    # Редактор проекта
+├── login.html      # Страница входа
+└── js/
+    ├── api.js      # API клиент (fetch wrapper)
+    ├── app.js      # Alpine.js компоненты (dashboard, projectEditor)
+    └── telegram.js # Telegram WebApp интеграция
+```
+
+## API Endpoints
+
+- `GET/POST /api/projects` — список/создание проектов
+- `GET/PUT/DELETE /api/projects/{id}` — операции с проектом
+- `POST/DELETE/PATCH /api/projects/{id}/items` — позиции проекта
+- `GET /api/catalog/search?q=` — поиск в каталоге
+- `GET /api/catalog/grouped` — каталог сгруппированный по названию
+- `POST /api/catalog/sync` — синхронизация с Google Sheets
+
 ## Git Configuration
 
 - GitHub account: pavelbrick@gmail.com

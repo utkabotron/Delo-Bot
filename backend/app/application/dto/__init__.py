@@ -3,6 +3,7 @@ from app.application.dto.project_dto import (
     ProjectUpdateDTO,
     ProjectResponseDTO,
     ProjectItemCreateDTO,
+    ProjectItemUpdateDTO,
     ProjectItemResponseDTO,
     ProjectSummaryDTO,
 )
@@ -13,6 +14,7 @@ __all__ = [
     "ProjectUpdateDTO",
     "ProjectResponseDTO",
     "ProjectItemCreateDTO",
+    "ProjectItemUpdateDTO",
     "ProjectItemResponseDTO",
     "ProjectSummaryDTO",
     "CatalogProductDTO",

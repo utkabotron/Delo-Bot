@@ -7,7 +7,7 @@ from pathlib import Path
 from app.config import get_settings
 from app.database import Base, engine
 from app.presentation.api import projects_router, catalog_router
-from app.presentation.middleware import TelegramMiddleware
+from app.presentation.middleware import TelegramMiddleware, AuthMiddleware
 
 # Импортируем модели для создания таблиц
 from app.infrastructure.persistence.models import (
@@ -40,6 +40,9 @@ app.add_middleware(
 # Telegram validation middleware (отключён по умолчанию)
 app.add_middleware(TelegramMiddleware, enabled=False)
 
+# Auth middleware
+app.add_middleware(AuthMiddleware)
+
 # API routers
 app.include_router(projects_router)
 app.include_router(catalog_router)
@@ -52,6 +55,10 @@ if frontend_path.exists():
     @app.get("/")
     async def serve_index():
         return FileResponse(str(frontend_path / "index.html"))
+
+    @app.get("/login")
+    async def serve_login():
+        return FileResponse(str(frontend_path / "login.html"))
 
     @app.get("/project/{project_id}")
     async def serve_project_page(project_id: int):

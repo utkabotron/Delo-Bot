@@ -104,3 +104,20 @@ class SQLAlchemyProjectRepository(IProjectRepository):
             self.db.commit()
             return True
         return False
+
+    def update_item_quantity(self, item_id: int, quantity: int) -> Optional[ProjectItem]:
+        model = self.db.query(ProjectItemModel).filter(ProjectItemModel.id == item_id).first()
+        if not model:
+            return None
+        model.quantity = quantity
+        self.db.commit()
+        self.db.refresh(model)
+        return ProjectItem(
+            id=model.id,
+            project_id=model.project_id,
+            name=model.name,
+            item_type=model.item_type,
+            base_price=Decimal(str(model.base_price)),
+            cost_price=Decimal(str(model.cost_price)),
+            quantity=model.quantity,
+        )

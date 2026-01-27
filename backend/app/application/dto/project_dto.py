@@ -11,6 +11,10 @@ class ProjectItemCreateDTO(BaseModel):
     quantity: int = 1
 
 
+class ProjectItemUpdateDTO(BaseModel):
+    quantity: int = Field(ge=1)
+
+
 class ProjectItemResponseDTO(BaseModel):
     id: int
     name: str

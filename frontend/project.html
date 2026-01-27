@@ -9,9 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/static/css/custom.css">
 </head>
-<body class="bg-gray-100 min-h-screen" x-data="projectEditor()" x-init="init()">
+<body class="bg-gray-100 h-screen flex flex-col overflow-hidden" x-data="projectEditor()" x-init="init()">
+    <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-10">
+    <header class="bg-white shadow-sm flex-shrink-0 z-10">
         <div class="px-4 py-3 flex items-center gap-3">
             <button @click="goBack()" class="text-gray-600 hover:text-gray-800">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +33,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="p-4 pb-48">
+    <main class="flex-1 overflow-y-auto native-scroll p-4">
         <!-- Add Button -->
         <button
             @click="openAddItemModal()"
@@ -47,7 +48,7 @@
                 <div class="bg-white rounded-xl p-4 shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-medium text-gray-800 truncate" x-text="item.name"></h3>
+                            <h3 class="font-medium text-gray-800 truncate" x-text="getBaseName(item.name, item.item_type)"></h3>
                             <p class="text-sm text-gray-500" x-text="item.item_type"></p>
                         </div>
                         <button
@@ -89,8 +90,8 @@
         </template>
     </main>
 
-    <!-- Sticky Summary Panel -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-20">
+    <!-- Summary Panel -->
+    <div class="flex-shrink-0 bg-white border-t shadow-lg z-20">
         <div class="p-4 space-y-2">
             <div class="flex justify-between text-sm">
                 <span class="text-gray-500">Подытог</span>
@@ -120,7 +121,7 @@
                 <span>Прибыль</span>
                 <span :class="(project?.summary?.profit || 0) >= 0 ? 'text-green-600' : 'text-red-600'">
                     <span x-text="formatMoney(project?.summary?.profit || 0) + ' ₽'"></span>
-                    (<span x-text="(project?.summary?.margin || 0).toFixed(1)"></span>%)
+                    (<span x-text="parseFloat(project?.summary?.margin || 0).toFixed(1)"></span>%)
                 </span>
             </div>
         </div>

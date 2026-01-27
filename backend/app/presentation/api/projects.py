@@ -6,6 +6,7 @@ from app.application.dto import (
     ProjectUpdateDTO,
     ProjectResponseDTO,
     ProjectItemCreateDTO,
+    ProjectItemUpdateDTO,
     ProjectItemResponseDTO,
 )
 from app.application.use_cases import ProjectUseCases
@@ -70,6 +71,19 @@ def add_item(
     item = use_cases.add_item(project_id, dto)
     if not item:
         raise HTTPException(status_code=404, detail="Project not found")
+    return item
+
+
+@router.patch("/{project_id}/items/{item_id}", response_model=ProjectItemResponseDTO)
+def update_item(
+    project_id: int,
+    item_id: int,
+    dto: ProjectItemUpdateDTO,
+    use_cases: ProjectUseCases = Depends(get_use_cases),
+):
+    item = use_cases.update_item_quantity(item_id, dto.quantity)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
     return item
 
 
