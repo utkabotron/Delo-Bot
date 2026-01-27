@@ -329,10 +329,14 @@ function projectEditor() {
             this.editingItem = item;
             this.tempQuantity = item.quantity;
             this.showQuantityModal = true;
-            // Auto-focus input после открытия модалки
-            this.$nextTick(() => {
-                this.$refs.quantityInput?.focus();
-            });
+            // Auto-focus input после открытия модалки (клавиатура появится автоматически)
+            setTimeout(() => {
+                const input = document.getElementById('quantity-modal-input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 100);
         },
 
         async saveQuantityFromModal() {
