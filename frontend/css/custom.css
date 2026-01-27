@@ -47,14 +47,13 @@ body {
     opacity: 0.85;  /* Improved from 0.6 for better contrast */
 }
 
-/* Borders using hint color */
+/* Borders using hint color with alpha channel (not opacity to avoid affecting child elements) */
 .border,
 .border-t,
 .border-b,
 .border-l,
 .border-r {
-    border-color: var(--tg-hint-color) !important;
-    opacity: 0.35;  /* Improved from 0.2 for better visibility */
+    border-color: rgba(108, 117, 125, 0.35) !important;  /* #6c757d with 35% opacity */
 }
 
 /* Buttons */
