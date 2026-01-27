@@ -1,0 +1,100 @@
+// Telegram WebApp Integration
+
+const tg = {
+    app: window.Telegram?.WebApp,
+
+    init() {
+        if (!this.app) {
+            console.log('Not running in Telegram WebApp');
+            return;
+        }
+
+        // Expand to full height
+        this.app.expand();
+
+        // Apply theme
+        this.applyTheme();
+
+        // Ready signal
+        this.app.ready();
+    },
+
+    applyTheme() {
+        if (!this.app) return;
+
+        const root = document.documentElement;
+        const theme = this.app.themeParams;
+
+        if (theme.bg_color) {
+            root.style.setProperty('--tg-bg-color', theme.bg_color);
+        }
+        if (theme.text_color) {
+            root.style.setProperty('--tg-text-color', theme.text_color);
+        }
+        if (theme.hint_color) {
+            root.style.setProperty('--tg-hint-color', theme.hint_color);
+        }
+        if (theme.link_color) {
+            root.style.setProperty('--tg-link-color', theme.link_color);
+        }
+        if (theme.button_color) {
+            root.style.setProperty('--tg-button-color', theme.button_color);
+        }
+        if (theme.button_text_color) {
+            root.style.setProperty('--tg-button-text-color', theme.button_text_color);
+        }
+    },
+
+    showMainButton(text, callback) {
+        if (!this.app) return;
+
+        this.app.MainButton.setText(text);
+        this.app.MainButton.onClick(callback);
+        this.app.MainButton.show();
+    },
+
+    hideMainButton() {
+        if (!this.app) return;
+        this.app.MainButton.hide();
+    },
+
+    showBackButton(callback) {
+        if (!this.app) return;
+
+        this.app.BackButton.onClick(callback);
+        this.app.BackButton.show();
+    },
+
+    hideBackButton() {
+        if (!this.app) return;
+        this.app.BackButton.hide();
+    },
+
+    hapticFeedback(type = 'light') {
+        if (!this.app?.HapticFeedback) return;
+
+        switch (type) {
+            case 'light':
+                this.app.HapticFeedback.impactOccurred('light');
+                break;
+            case 'medium':
+                this.app.HapticFeedback.impactOccurred('medium');
+                break;
+            case 'heavy':
+                this.app.HapticFeedback.impactOccurred('heavy');
+                break;
+            case 'success':
+                this.app.HapticFeedback.notificationOccurred('success');
+                break;
+            case 'error':
+                this.app.HapticFeedback.notificationOccurred('error');
+                break;
+        }
+    },
+
+    close() {
+        if (this.app) {
+            this.app.close();
+        }
+    },
+};

@@ -1,0 +1,33 @@
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from app.database import Base
+
+
+class ProjectModel(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    client = Column(String, default="")
+    global_discount = Column(Numeric(10, 2), default=0)
+    global_tax = Column(Numeric(10, 2), default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    items = relationship(
+        "ProjectItemModel", back_populates="project", cascade="all, delete-orphan"
+    )
+
+
+class ProjectItemModel(Base):
+    __tablename__ = "project_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    name = Column(String, nullable=False)
+    item_type = Column(String, default="")
+    base_price = Column(Numeric(10, 2), default=0)
+    cost_price = Column(Numeric(10, 2), default=0)
+    quantity = Column(Integer, default=1)
+
+    project = relationship("ProjectModel", back_populates="items")
