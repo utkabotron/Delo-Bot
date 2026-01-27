@@ -96,6 +96,7 @@ function projectEditor() {
         loading: true,
         showSettingsModal: false,
         showAddItemModal: false,
+        showQuantityModal: false,
         showSearchResults: false,
         searchQuery: '',
         searchResults: [],
@@ -112,8 +113,9 @@ function projectEditor() {
             cost_price: 0,
             quantity: 1,
         },
-        // Отслеживание редактирования количества
-        editingItemId: null,
+        // Редактирование количества через модальное окно
+        editingItem: null,
+        tempQuantity: 1,
 
         async init() {
             tg.init();
@@ -323,40 +325,43 @@ function projectEditor() {
             }
         },
 
-        async saveQuantityFromButton(item) {
-            // Получаем значение из input
-            const input = document.getElementById(`qty-input-${item.id}`);
-            if (!input) return;
+        openQuantityModal(item) {
+            this.editingItem = item;
+            this.tempQuantity = item.quantity;
+            this.showQuantityModal = true;
+            // Auto-focus input после открытия модалки
+            this.$nextTick(() => {
+                this.$refs.quantityInput?.focus();
+            });
+        },
 
-            const newValue = input.value;
-            const newQuantity = parseInt(newValue);
+        async saveQuantityFromModal() {
+            if (!this.editingItem) return;
+
+            const newQuantity = parseInt(this.tempQuantity);
 
             // Validation
             if (isNaN(newQuantity) || newQuantity < 1) {
-                await this.loadProject(this.project.id);
-                this.editingItemId = null;
                 tg.hapticFeedback('error');
                 return;
             }
 
-            // If quantity unchanged, just close editor
-            if (newQuantity === item.quantity) {
-                this.editingItemId = null;
-                input.blur();
+            // If quantity unchanged, just close modal
+            if (newQuantity === this.editingItem.quantity) {
+                this.showQuantityModal = false;
+                this.editingItem = null;
                 return;
             }
 
             // Save via API
             try {
-                await api.projects.updateItemQuantity(this.project.id, item.id, newQuantity);
+                await api.projects.updateItemQuantity(this.project.id, this.editingItem.id, newQuantity);
                 await this.loadProject(this.project.id);
-                this.editingItemId = null;
-                input.blur();
+                this.showQuantityModal = false;
+                this.editingItem = null;
                 tg.hapticFeedback('success');
             } catch (error) {
                 console.error('Failed to save quantity:', error);
-                await this.loadProject(this.project.id);
-                this.editingItemId = null;
                 tg.hapticFeedback('error');
             }
         },
