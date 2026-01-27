@@ -21,5 +21,17 @@ jobs:
             git pull origin main
             source venv/bin/activate
             pip install -r backend/requirements.txt --quiet
+
+            # Backup database before migrations
+            if [ -f data/deloculator.db ]; then
+              cp data/deloculator.db data/deloculator.db.backup_$(date +%Y%m%d_%H%M%S)
+              echo "Database backed up"
+            fi
+
+            # Run Alembic migrations
+            cd backend
+            alembic upgrade head
+            cd ..
+
             sudo systemctl restart delo-bot
-            echo "Deployed successfully!"
+            echo "Deployed successfully with migrations!"

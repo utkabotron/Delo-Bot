@@ -20,7 +20,7 @@ from app.presentation.middleware import (
 from app.utils.exceptions import DelocatorException
 from app.utils.logging import logger
 
-# Импортируем модели для создания таблиц
+# Импортируем модели (для Alembic autogenerate)
 from app.infrastructure.persistence.models import (
     ProjectModel,
     ProjectItemModel,
@@ -37,8 +37,10 @@ if config_warnings:
     if settings.environment == "production":
         logger.error("Production environment detected with configuration warnings! Review settings immediately.")
 
-# Создаём таблицы
-Base.metadata.create_all(bind=engine)
+# NOTE: Table creation is now handled by Alembic migrations
+# Run `alembic upgrade head` to create/update tables
+# For backward compatibility during development, you can uncomment the line below:
+# Base.metadata.create_all(bind=engine)
 
 # Rate limiter configuration
 # Default: 100 requests per minute for all API endpoints

@@ -37,6 +37,24 @@ python scripts/sync_catalog.py
 # Или через API
 curl -X POST -H "X-Auth-Password: your_password" http://localhost:8000/api/catalog/sync
 
+# Database migrations (Alembic)
+cd backend
+
+# Применить миграции (создать/обновить таблицы)
+alembic upgrade head
+
+# Создать новую миграцию после изменения моделей
+alembic revision --autogenerate -m "Description of changes"
+
+# Откатить последнюю миграцию
+alembic downgrade -1
+
+# Посмотреть текущую версию БД
+alembic current
+
+# История миграций
+alembic history
+
 # Проверка здоровья API
 curl http://localhost:8000/api/health
 ```
@@ -217,7 +235,9 @@ frontend/
 2. SSH подключение к серверу (используя secrets: SERVER_HOST, SERVER_USER, SERVER_PASSWORD)
 3. `git pull origin main`
 4. `pip install -r backend/requirements.txt`
-5. `sudo systemctl restart delo-bot`
+5. **Бэкап БД:** Автоматическое создание `deloculator.db.backup_YYYYMMDD_HHMMSS`
+6. **Миграции:** `alembic upgrade head` (автоматически применяет новые миграции)
+7. `sudo systemctl restart delo-bot`
 
 Полезные команды на сервере:
 ```bash
@@ -230,9 +250,14 @@ curl -X POST -H 'X-Auth-Password: PASSWORD' http://127.0.0.1:8000/api/catalog/sy
 ## Важные детали реализации
 
 **Database:**
-- SQLite база данных создаётся автоматически при первом запуске в `data/deloculator.db`
-- Таблицы создаются через `Base.metadata.create_all()` в `app/main.py`
+- SQLite база данных: `data/deloculator.db`
+- Миграции управляются через **Alembic** (не `create_all()`!)
+- После изменения моделей в `infrastructure/persistence/models/`:
+  1. Создать миграцию: `cd backend && alembic revision --autogenerate -m "Description"`
+  2. Проверить сгенерированную миграцию в `backend/alembic/versions/`
+  3. Применить: `alembic upgrade head`
 - Используется SQLAlchemy ORM с декларативным стилем
+- **Deploy:** Миграции применяются автоматически при деплое (см. `.github/workflows/deploy.yml`)
 
 **Dependencies:**
 - Все Python зависимости в `backend/requirements.txt`
