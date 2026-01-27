@@ -66,7 +66,30 @@
                                 @click="updateQuantity(item, -1)"
                                 class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
                             >-</button>
-                            <span class="w-8 text-center" x-text="item.quantity"></span>
+
+                            <!-- Обычное отображение количества -->
+                            <span
+                                x-show="editingItemId !== item.id"
+                                @click="startEditQuantity(item)"
+                                class="w-12 text-center cursor-pointer hover:bg-gray-100 rounded px-1 py-0.5 transition"
+                                x-text="item.quantity"
+                            ></span>
+
+                            <!-- Режим редактирования количества -->
+                            <input
+                                :id="`qty-${item.id}`"
+                                x-show="editingItemId === item.id"
+                                type="number"
+                                :value="item.quantity"
+                                @focus="$el.select()"
+                                @blur="saveQuantity(item, $event.target.value)"
+                                @keydown.enter="$event.target.blur()"
+                                @keydown.escape="cancelEditQuantity()"
+                                class="w-12 text-center border border-blue-500 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                min="1"
+                                inputmode="numeric"
+                            />
+
                             <button
                                 @click="updateQuantity(item, 1)"
                                 class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
@@ -92,7 +115,7 @@
 
     <!-- Summary Panel -->
     <div class="flex-shrink-0 bg-white border-t shadow-lg z-20">
-        <div class="p-4 pb-6">
+        <div class="p-4 pb-8">
             <!-- Секция 1: Подытог + Скидки/Налоги -->
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
@@ -114,13 +137,13 @@
             </div>
 
             <!-- Секция 2: Итого (главное) -->
-            <div class="border-t pt-4 mt-3 flex justify-between font-bold text-lg">
+            <div class="border-t pt-3 mt-2 flex justify-between font-bold text-lg">
                 <span>Итого</span>
                 <span x-text="formatMoney(project?.summary?.revenue || 0) + ' ₽'"></span>
             </div>
 
             <!-- Секция 3: Себестоимость + Прибыль -->
-            <div class="space-y-2 pt-3">
+            <div class="space-y-2 pt-2">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">Себестоимость</span>
                     <span class="text-gray-600" x-text="formatMoney(project?.summary?.total_cost || 0) + ' ₽'"></span>

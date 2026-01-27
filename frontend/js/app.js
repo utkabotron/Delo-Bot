@@ -112,6 +112,8 @@ function projectEditor() {
             cost_price: 0,
             quantity: 1,
         },
+        // Редактирование количества
+        editingItemId: null,
 
         async init() {
             tg.init();
@@ -291,6 +293,52 @@ function projectEditor() {
                 console.error('Failed to update quantity:', error);
                 tg.hapticFeedback('error');
             }
+        },
+
+        startEditQuantity(item) {
+            this.editingItemId = item.id;
+            tg.hapticFeedback('light');
+            // Focus input after Alpine renders it
+            setTimeout(() => {
+                const input = document.getElementById(`qty-${item.id}`);
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 50);
+        },
+
+        async saveQuantity(item, newValue) {
+            const newQuantity = parseInt(newValue);
+
+            // Validation
+            if (isNaN(newQuantity) || newQuantity < 1) {
+                this.cancelEditQuantity();
+                tg.hapticFeedback('error');
+                return;
+            }
+
+            // If quantity unchanged, just close editor
+            if (newQuantity === item.quantity) {
+                this.cancelEditQuantity();
+                return;
+            }
+
+            // Save via API
+            try {
+                await api.projects.updateItemQuantity(this.project.id, item.id, newQuantity);
+                await this.loadProject(this.project.id);
+                this.editingItemId = null;
+                tg.hapticFeedback('success');
+            } catch (error) {
+                console.error('Failed to save quantity:', error);
+                this.cancelEditQuantity();
+                tg.hapticFeedback('error');
+            }
+        },
+
+        cancelEditQuantity() {
+            this.editingItemId = null;
         },
 
         async updateProject() {
