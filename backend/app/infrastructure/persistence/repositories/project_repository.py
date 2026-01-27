@@ -1,6 +1,6 @@
 from typing import Optional
 from decimal import Decimal
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.domain.entities import Project, ProjectItem
 from app.domain.repositories import IProjectRepository
 from app.infrastructure.persistence.models import ProjectModel, ProjectItemModel
@@ -34,11 +34,23 @@ class SQLAlchemyProjectRepository(IProjectRepository):
         )
 
     def get_all(self) -> list[Project]:
-        models = self.db.query(ProjectModel).order_by(ProjectModel.created_at.desc()).all()
+        # Use joinedload to prevent N+1 queries when accessing items
+        models = (
+            self.db.query(ProjectModel)
+            .options(joinedload(ProjectModel.items))
+            .order_by(ProjectModel.created_at.desc())
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
     def get_by_id(self, project_id: int) -> Optional[Project]:
-        model = self.db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+        # Use joinedload to prevent N+1 queries when accessing items
+        model = (
+            self.db.query(ProjectModel)
+            .options(joinedload(ProjectModel.items))
+            .filter(ProjectModel.id == project_id)
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
@@ -52,7 +64,13 @@ class SQLAlchemyProjectRepository(IProjectRepository):
         )
         self.db.add(model)
         self.db.commit()
-        self.db.refresh(model)
+        # Reload with items to prevent N+1 if accessed later
+        model = (
+            self.db.query(ProjectModel)
+            .options(joinedload(ProjectModel.items))
+            .filter(ProjectModel.id == model.id)
+            .first()
+        )
         return self._to_entity(model)
 
     def update(self, project: Project) -> Project:
@@ -63,7 +81,13 @@ class SQLAlchemyProjectRepository(IProjectRepository):
             model.global_discount = project.global_discount
             model.global_tax = project.global_tax
             self.db.commit()
-            self.db.refresh(model)
+            # Reload with items to prevent N+1 if accessed later
+            model = (
+                self.db.query(ProjectModel)
+                .options(joinedload(ProjectModel.items))
+                .filter(ProjectModel.id == project.id)
+                .first()
+            )
             return self._to_entity(model)
         return project
 
