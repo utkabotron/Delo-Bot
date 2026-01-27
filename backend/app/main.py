@@ -50,7 +50,13 @@ app.include_router(catalog_router)
 # Статические файлы frontend
 frontend_path = Path(__file__).parent.parent.parent / "frontend"
 if frontend_path.exists():
-    app.mount("/static", StaticFiles(directory=str(frontend_path)), name="static")
+    # CSS и JS
+    css_path = frontend_path / "css"
+    js_path = frontend_path / "js"
+    if css_path.exists():
+        app.mount("/css", StaticFiles(directory=str(css_path)), name="css")
+    if js_path.exists():
+        app.mount("/js", StaticFiles(directory=str(js_path)), name="js")
 
     @app.get("/")
     async def serve_index():

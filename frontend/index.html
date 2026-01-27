@@ -7,19 +7,20 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/css/custom.css">
+    <link rel="stylesheet" href="/css/custom.css">
 </head>
 <body class="bg-gray-100 min-h-screen" x-data="dashboard()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="px-4 py-3 flex items-center justify-between">
-            <h1 class="text-xl font-bold text-gray-800">Deloculator</h1>
+    <header class="bg-white shadow-sm sticky top-0 z-10 safe-top">
+        <div class="px-4 py-3 flex items-center justify-between gap-2">
+            <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">Deloculator</h1>
             <button
                 @click="showNewProjectModal = true"
-                class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
+                class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition whitespace-nowrap flex-shrink-0"
             >
-                + Новый проект
+                <span class="hidden sm:inline">+ Новый проект</span>
+                <span class="sm:hidden">+ Новый</span>
             </button>
         </div>
     </header>
@@ -141,8 +142,8 @@
         </div>
     </div>
 
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/telegram.js"></script>
-    <script src="/static/js/app.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/telegram.js"></script>
+    <script src="/js/app.js"></script>
 </body>
 </html>

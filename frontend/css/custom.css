@@ -64,7 +64,13 @@ html {
     transform: scale(0.98);
 }
 
-/* Safe area padding for iOS */
+/* Safe area padding for iOS and Telegram Mini App */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .safe-top {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .safe-bottom {
         padding-bottom: env(safe-area-inset-bottom);
