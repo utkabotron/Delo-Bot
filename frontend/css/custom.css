@@ -177,6 +177,19 @@ textarea:read-only {
     background-color: var(--tg-button-color) !important;
 }
 
+/* Active states (for touch/tap on mobile) */
+.active\:bg-gray-50:active {
+    background-color: var(--tg-secondary-bg-color) !important;
+}
+
+.active\:bg-gray-100:active {
+    background-color: var(--tg-secondary-bg-color) !important;
+}
+
+.active\:bg-red-50:active {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
 /* Specific fixes for badges/pills */
 .bg-gray-100.text-gray-600 {
     background-color: var(--tg-secondary-bg-color) !important;
