@@ -20,11 +20,31 @@ const tg = {
         // Apply theme - DISABLED (always use light theme)
         // this.applyTheme();
 
+        // Force light theme by overriding CSS variables
+        this.forceLightTheme();
+
         // Apply safe area insets
         this.applySafeArea();
 
         // Ready signal
         this.app.ready();
+    },
+
+    forceLightTheme() {
+        // Force light theme colors regardless of Telegram theme
+        const root = document.documentElement;
+        root.style.setProperty('--tg-bg-color', '#ffffff');
+        root.style.setProperty('--tg-text-color', '#000000');
+        root.style.setProperty('--tg-hint-color', '#6c757d');
+        root.style.setProperty('--tg-link-color', '#2481cc');
+        root.style.setProperty('--tg-button-color', '#2481cc');
+        root.style.setProperty('--tg-button-text-color', '#ffffff');
+        root.style.setProperty('--tg-secondary-bg-color', '#f7f7f7');
+        root.style.setProperty('--tg-section-bg-color', '#ffffff');
+        root.style.setProperty('--tg-subtitle-text-color', '#707070');
+        root.style.setProperty('--tg-border-color', 'rgba(108, 117, 125, 0.35)');
+
+        console.log('Light theme forced');
     },
 
     applySafeArea() {
