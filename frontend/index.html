@@ -11,24 +11,22 @@
 </head>
 <body class="bg-gray-100 min-h-screen" x-data="dashboard()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-10">
+    <!-- Floating Header (iOS 26 style) -->
+    <header class="floating-nav sticky top-0 z-10 safe-top">
         <div class="px-4 py-3 flex items-center justify-between gap-2">
             <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">Deloculator</h1>
-            <div class="flex items-center gap-2">
+            <div class="button-group">
                 <button
                     @click="syncCatalog()"
                     :disabled="syncing"
-                    class="p-2 text-gray-500 hover:text-blue-500 hover:bg-gray-100 rounded-lg transition"
                     title="Обновить каталог"
                 >
-                    <svg class="w-5 h-5" :class="syncing && 'animate-spin'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 inline-block" :class="syncing && 'animate-spin'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
                 </button>
                 <button
                     @click="showNewProjectModal = true"
-                    class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition whitespace-nowrap flex-shrink-0"
                 >
                     <span class="hidden sm:inline">+ Новый проект</span>
                     <span class="sm:hidden">+ Новый</span>
@@ -53,7 +51,7 @@
             </div>
         </template>
 
-        <div class="mx-4 my-4 grouped-list" x-show="projects.length > 0">
+        <div class="ios26-inset my-4 grouped-list" x-show="projects.length > 0">
             <template x-for="(project, index) in projects" :key="project.id">
                 <div>
                     <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
@@ -76,10 +74,10 @@
                             </div>
                         </div>
                         <div class="mt-2 flex gap-2 text-xs">
-                            <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">
+                            <span class="bg-gray-100 text-gray-500 px-2 py-1 ios26-button opacity-secondary">
                                 Прибыль: <span x-text="formatMoney(project.summary.profit)"></span> ₽
                             </span>
-                            <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">
+                            <span class="bg-gray-100 text-gray-500 px-2 py-1 ios26-button opacity-secondary">
                                 Маржа: <span x-text="parseFloat(project.summary.margin || 0).toFixed(1)"></span>%
                             </span>
                         </div>
@@ -89,7 +87,7 @@
         </div>
     </main>
 
-    <!-- New Project Modal -->
+    <!-- New Project Modal (iOS 26 style) -->
     <div
         x-show="showNewProjectModal"
         x-transition:enter="transition ease-out duration-200"
@@ -102,7 +100,7 @@
         @click.self="showNewProjectModal = false"
     >
         <div
-            class="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-6"
+            class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95"
             x-transition:enter-end="translate-y-0 sm:scale-100"
@@ -116,7 +114,7 @@
                             type="text"
                             x-model="newProject.name"
                             required
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Название проекта"
                         >
                     </div>
@@ -125,22 +123,23 @@
                         <input
                             type="text"
                             x-model="newProject.client"
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Имя клиента"
                         >
                     </div>
                 </div>
-                <div class="flex gap-3 mt-6">
+                <div class="button-group w-full mt-6">
                     <button
                         type="button"
                         @click="showNewProjectModal = false"
-                        class="flex-1 px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 transition"
+                        class="flex-1 px-4 py-3"
+                        style="color: var(--tg-text-color); opacity: 0.7;"
                     >
                         Отмена
                     </button>
                     <button
                         type="submit"
-                        class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                        class="flex-1 px-4 py-3 font-medium"
                     >
                         Создать
                     </button>

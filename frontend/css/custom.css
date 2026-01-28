@@ -321,3 +321,109 @@ input[type="number"] {
     margin-right: 16px;
 }
 
+/* ========================================
+   iOS 26 Redesign Styles
+   ======================================== */
+
+/* Floating Navigation Bar */
+.floating-nav {
+    margin: 12px 16px 0;
+    border-radius: 20px;
+    background: var(--tg-section-bg-color);
+    /* Убираем тень, используем полупрозрачный фон */
+    box-shadow: none;
+}
+
+/* Grouped Buttons */
+.button-group {
+    display: inline-flex;
+    background: var(--tg-secondary-bg-color);
+    border-radius: 12px;
+    overflow: hidden;
+    gap: 1px;
+}
+
+.button-group button {
+    background: var(--tg-section-bg-color);
+    border: none;
+    padding: 8px 12px;
+    color: var(--tg-link-color);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.button-group button:first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+.button-group button:last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+.button-group button:active {
+    background: var(--tg-secondary-bg-color);
+}
+
+/* iOS 26: Увеличенные скругления */
+.ios26-container {
+    border-radius: 20px;
+}
+
+.ios26-button {
+    border-radius: 12px;
+}
+
+.ios26-input {
+    border-radius: 12px;
+}
+
+/* iOS 26: Opacity Hierarchy */
+.opacity-primary {
+    opacity: 1;
+}
+
+.opacity-secondary {
+    opacity: 0.7;
+}
+
+.opacity-hint {
+    opacity: 0.4;
+}
+
+.opacity-decorative {
+    opacity: 0.2;
+}
+
+/* iOS 26: Grouped list с большим скруглением */
+.grouped-list {
+    background: var(--tg-section-bg-color);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+/* iOS 26: Summary panel */
+.ios26-summary {
+    margin: 0 16px;
+    border-radius: 20px 20px 0 0;
+    background: var(--tg-section-bg-color);
+    border-top: none;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* iOS 26: Modal с большим скруглением */
+.ios26-modal {
+    border-radius: 20px;
+}
+
+.ios26-modal-bottom {
+    border-radius: 20px 20px 0 0;
+}
+
+/* iOS 26: Отступы от краёв */
+.ios26-inset {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
