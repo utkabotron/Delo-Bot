@@ -109,11 +109,19 @@ function dashboard() {
         projects: [],
         loading: true,
         syncing: false,
-        showArchived: false,
+        activeTab: 'active', // 'active', 'archived', 'catalog'
         showNewProjectModal: false,
         newProject: {
             name: '',
             client: '',
+        },
+        // Catalog
+        catalogItems: [],
+        filteredCatalog: [],
+        catalogTypes: [],
+        catalogFilter: {
+            name: '',
+            type: '',
         },
 
         async init() {
@@ -140,12 +148,48 @@ function dashboard() {
         async loadProjects() {
             this.loading = true;
             try {
-                this.projects = await api.projects.list(this.showArchived);
+                this.projects = await api.projects.list(this.activeTab === 'archived');
             } catch (error) {
                 console.error('Failed to load projects:', error);
             } finally {
                 this.loading = false;
             }
+        },
+
+        async loadCatalog() {
+            if (this.catalogItems.length > 0) {
+                // Already loaded
+                return;
+            }
+            this.loading = true;
+            try {
+                this.catalogItems = await api.catalog.grouped();
+                // Extract unique types
+                this.catalogTypes = [...new Set(this.catalogItems.map(i => i.product_type))].sort();
+                this.filterCatalog();
+            } catch (error) {
+                console.error('Failed to load catalog:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        filterCatalog() {
+            let items = this.catalogItems;
+
+            if (this.catalogFilter.name) {
+                const query = this.catalogFilter.name.toLowerCase();
+                items = items.filter(i =>
+                    i.base_name.toLowerCase().includes(query) ||
+                    i.name.toLowerCase().includes(query)
+                );
+            }
+
+            if (this.catalogFilter.type) {
+                items = items.filter(i => i.product_type === this.catalogFilter.type);
+            }
+
+            this.filteredCatalog = items;
         },
 
         async createProject() {

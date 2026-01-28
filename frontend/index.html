@@ -15,7 +15,7 @@
     <header class="sticky top-0 z-10 safe-top header-gradient">
         <div class="px-4 pt-6 pb-2 flex items-center justify-between gap-4">
             <!-- Left: Large Title -->
-            <h1 class="text-2xl font-bold text-gray-800 truncate pl-2">Проекты</h1>
+            <h1 class="text-2xl font-bold text-gray-800 truncate pl-2" x-text="activeTab === 'catalog' ? 'Каталог' : 'Проекты'"></h1>
             <!-- Right: Sync + Add buttons -->
             <div class="flex items-center gap-2">
                 <button
@@ -29,6 +29,7 @@
                     </svg>
                 </button>
                 <button
+                    x-show="activeTab !== 'catalog'"
                     @click="showNewProjectModal = true"
                     class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white flex-shrink-0 active:opacity-70"
                 >
@@ -39,11 +40,11 @@
             </div>
         </div>
         <!-- Filter tabs (iOS Mail style) -->
-        <div class="px-4 pb-4 flex gap-2">
+        <div class="px-4 pb-4 flex gap-2 overflow-x-auto">
             <button
-                @click="showArchived = false; loadProjects()"
+                @click="activeTab = 'active'; loadProjects()"
                 class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition whitespace-nowrap"
-                :class="!showArchived ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-600'"
+                :class="activeTab === 'active' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-600'"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -51,19 +52,29 @@
                 Активные
             </button>
             <button
-                @click="showArchived = true; loadProjects()"
+                @click="activeTab = 'archived'; loadProjects()"
                 class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition whitespace-nowrap"
-                :class="showArchived ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'"
+                :class="activeTab === 'archived' ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                 </svg>
                 Архив
             </button>
+            <button
+                @click="activeTab = 'catalog'; loadCatalog()"
+                class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition whitespace-nowrap"
+                :class="activeTab === 'catalog' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'"
+            >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                Каталог
+            </button>
         </div>
     </header>
 
-    <!-- Projects List -->
+    <!-- Content -->
     <main class="pb-20">
         <template x-if="loading">
             <div class="flex justify-center py-8">
@@ -71,55 +82,111 @@
             </div>
         </template>
 
-        <template x-if="!loading && projects.length === 0 && !showArchived">
-            <div class="text-center py-12">
-                <div class="text-gray-400 text-5xl mb-4">📋</div>
-                <p class="text-gray-500">Нет проектов</p>
-                <p class="text-gray-400 text-sm mt-1">Создайте первый проект</p>
-            </div>
-        </template>
-
-        <template x-if="!loading && projects.length === 0 && showArchived">
-            <div class="text-center py-12">
-                <div class="text-gray-400 text-5xl mb-4">📦</div>
-                <p class="text-gray-500">Архив пуст</p>
-                <p class="text-gray-400 text-sm mt-1">Архивные проекты появятся здесь</p>
-            </div>
-        </template>
-
-        <div class="ios26-inset mb-4 grouped-list" x-show="projects.length > 0">
-            <template x-for="(project, index) in projects" :key="project.id">
-                <div>
-                    <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
-                    <div
-                        @click="openProject(project.id)"
-                        class="grouped-list-item cursor-pointer active:bg-gray-50"
-                    >
-                        <div class="flex justify-between items-start">
-                            <!-- Left: Name + Client -->
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold" x-text="project.name"></div>
-                                <div class="text-sm text-gray-500" x-text="project.client || 'Без клиента'"></div>
-                            </div>
-                            <!-- Right: Revenue + Items count -->
-                            <div class="text-right pl-3 flex-shrink-0">
-                                <div class="font-semibold" :class="project.summary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
-                                    <span x-text="formatMoney(project.summary.revenue)"></span> ₽
-                                </div>
-                                <div class="text-sm text-gray-500" x-text="formatItems(project.items?.length || 0)"></div>
-                            </div>
-                        </div>
-                        <div class="mt-2 flex gap-2 text-xs">
-                            <span class="bg-gray-100 text-gray-600 px-2 py-1 ios26-button">
-                                Прибыль: <span x-text="formatMoney(project.summary.profit)"></span> ₽
-                            </span>
-                            <span class="bg-gray-100 text-gray-600 px-2 py-1 ios26-button">
-                                Маржа: <span x-text="parseFloat(project.summary.margin || 0).toFixed(1)"></span>%
-                            </span>
-                        </div>
-                    </div>
+        <!-- Projects List -->
+        <div x-show="activeTab !== 'catalog' && !loading">
+            <template x-if="projects.length === 0 && activeTab === 'active'">
+                <div class="text-center py-12">
+                    <div class="text-gray-400 text-5xl mb-4">📋</div>
+                    <p class="text-gray-500">Нет проектов</p>
+                    <p class="text-gray-400 text-sm mt-1">Создайте первый проект</p>
                 </div>
             </template>
+
+            <template x-if="projects.length === 0 && activeTab === 'archived'">
+                <div class="text-center py-12">
+                    <div class="text-gray-400 text-5xl mb-4">📦</div>
+                    <p class="text-gray-500">Архив пуст</p>
+                    <p class="text-gray-400 text-sm mt-1">Архивные проекты появятся здесь</p>
+                </div>
+            </template>
+
+            <div class="ios26-inset mb-4 grouped-list" x-show="projects.length > 0">
+                <template x-for="(project, index) in projects" :key="project.id">
+                    <div>
+                        <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
+                        <div
+                            @click="openProject(project.id)"
+                            class="grouped-list-item cursor-pointer active:bg-gray-50"
+                        >
+                            <div class="flex justify-between items-start">
+                                <!-- Left: Name + Client -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold" x-text="project.name"></div>
+                                    <div class="text-sm text-gray-500" x-text="project.client || 'Без клиента'"></div>
+                                </div>
+                                <!-- Right: Revenue + Items count -->
+                                <div class="text-right pl-3 flex-shrink-0">
+                                    <div class="font-semibold" :class="project.summary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
+                                        <span x-text="formatMoney(project.summary.revenue)"></span> ₽
+                                    </div>
+                                    <div class="text-sm text-gray-500" x-text="formatItems(project.items?.length || 0)"></div>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex gap-2 text-xs">
+                                <span class="bg-gray-100 text-gray-600 px-2 py-1 ios26-button">
+                                    Прибыль: <span x-text="formatMoney(project.summary.profit)"></span> ₽
+                                </span>
+                                <span class="bg-gray-100 text-gray-600 px-2 py-1 ios26-button">
+                                    Маржа: <span x-text="parseFloat(project.summary.margin || 0).toFixed(1)"></span>%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Catalog -->
+        <div x-show="activeTab === 'catalog' && !loading">
+            <!-- Filters -->
+            <div class="ios26-inset mb-4 space-y-2">
+                <input
+                    type="text"
+                    x-model="catalogFilter.name"
+                    @input="filterCatalog()"
+                    placeholder="Поиск по названию..."
+                    class="w-full px-4 py-2 border ios26-input bg-white focus:ring-2 focus:ring-blue-500"
+                >
+                <select
+                    x-model="catalogFilter.type"
+                    @change="filterCatalog()"
+                    class="w-full px-4 py-2 border ios26-input bg-white focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">Все типы</option>
+                    <template x-for="type in catalogTypes" :key="type">
+                        <option :value="type" x-text="type"></option>
+                    </template>
+                </select>
+            </div>
+
+            <template x-if="filteredCatalog.length === 0">
+                <div class="text-center py-12">
+                    <div class="text-gray-400 text-5xl mb-4">📦</div>
+                    <p class="text-gray-500">Ничего не найдено</p>
+                </div>
+            </template>
+
+            <div class="ios26-inset mb-4 grouped-list" x-show="filteredCatalog.length > 0">
+                <template x-for="(item, index) in filteredCatalog" :key="item.name + item.product_type">
+                    <div>
+                        <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
+                        <div class="grouped-list-item">
+                            <div class="flex justify-between items-start">
+                                <!-- Left: Name + Type -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold" x-text="item.base_name"></div>
+                                    <div class="text-sm text-gray-500" x-text="item.product_type"></div>
+                                </div>
+                                <!-- Right: Prices -->
+                                <div class="text-right pl-3 flex-shrink-0">
+                                    <div class="font-semibold" x-text="formatMoney(item.base_price) + ' ₽'"></div>
+                                    <div class="text-sm text-gray-500" x-text="'С/с: ' + formatMoney(item.cost_price) + ' ₽'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
         </div>
     </main>
 
