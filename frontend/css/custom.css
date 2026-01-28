@@ -451,3 +451,12 @@ input[type="number"] {
     color: var(--tg-button-text-color);
 }
 
+/* iOS 26: Title bubble (pill shape) */
+.title-bubble {
+    background: var(--tg-secondary-bg-color);
+    color: var(--tg-text-color);
+    border-radius: 9999px;
+    padding: 8px 16px;
+    text-align: center;
+}
+

@@ -12,21 +12,21 @@
 <body class="bg-gray-100 flex flex-col overflow-hidden" style="height: 100dvh; height: 100vh;" x-data="projectEditor()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Floating Header (iOS 26 style) -->
-    <header class="floating-nav flex-shrink-0 z-10 safe-top">
-        <div class="px-3 py-2 flex items-center gap-3">
+    <header class="flex-shrink-0 z-10 safe-top">
+        <div class="px-4 py-3 flex items-center gap-2">
             <!-- Back button (круглая) -->
             <button @click="goBack()" class="icon-button flex-shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
-            <!-- Title (тап = настройки) -->
+            <!-- Title bubble (тап = настройки) -->
             <div
                 @click="showSettingsModal = true"
-                class="flex-1 min-w-0 text-center cursor-pointer active:opacity-70"
+                class="title-bubble flex-1 min-w-0 cursor-pointer active:opacity-70"
             >
-                <h1 class="text-base font-semibold text-gray-800 truncate" x-text="project?.name || 'Загрузка...'"></h1>
-                <p class="text-xs text-gray-500 truncate opacity-secondary" x-text="project?.client || ''"></p>
+                <h1 class="text-sm font-semibold truncate" x-text="project?.name || 'Загрузка...'"></h1>
+                <p class="text-xs opacity-60 truncate" x-show="project?.client" x-text="project?.client"></p>
             </div>
             <!-- Add button (круглая) -->
             <button @click="openAddItemModal()" class="icon-button icon-button-primary flex-shrink-0">
