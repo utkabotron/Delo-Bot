@@ -39,5 +39,11 @@ Thumbs.db
 *.log
 logs/
 
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+
 # Keep data folder but ignore db files
 !data/.gitkeep
