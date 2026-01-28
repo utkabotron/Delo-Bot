@@ -11,6 +11,7 @@ Deloculator — Telegram Mini App для расчёта стоимости за�
 - **Backend:** Python + FastAPI (Clean Architecture)
 - **Database:** SQLite + SQLAlchemy + Alembic (миграции)
 - **Frontend:** HTML5, Alpine.js, Tailwind CSS (CDN)
+- **PDF:** ReportLab (с Cyrillic-шрифтами)
 - **Интеграция:** Google Sheets API для синхронизации каталога
 
 ## Commands
@@ -36,8 +37,11 @@ cd backend && alembic upgrade head                              # Примени
 cd backend && alembic revision --autogenerate -m "Description"  # Создать новую
 cd backend && alembic downgrade -1                              # Откатить
 
-# Синхронизация каталога (или через кнопку 🔄 в UI)
-curl -X POST -H "X-Auth-Password: password" http://localhost:8000/api/catalog/sync
+# Деплой
+ssh root@176.57.214.150 "cd /opt/delo-bot && git pull && sudo systemctl restart delo-bot"
+
+# Логи на сервере
+ssh root@176.57.214.150 "journalctl -u delo-bot -f"
 ```
 
 ## Clean Architecture
@@ -80,14 +84,54 @@ margin = profit / revenue × 100%
 
 Скидка и налог — оба ВЫЧИТАЮТСЯ из суммы.
 
+**Экспорт для клиента** (без себестоимости/прибыли/налога):
+```python
+client_total = subtotal × (1 - discount/100)  # Налог НЕ показываем клиенту
+```
+
+## Frontend Layout Architecture
+
+Две страницы используют **разные layout-подходы** — это критично для скролла:
+
+**index.html (dashboard)** — header внутри скролл-контейнера:
+```
+<body overflow-hidden, height: 100dvh>
+  <main h-full overflow-y-auto native-scroll>   ← единый скролл
+    <header sticky top-0 header-gradient>        ← прилипает при скролле
+    </header>
+    контент скроллится ПОД header
+  </main>
+  модалки (fixed, вне main)
+</body>
+```
+
+**project.html** — header вне скролл-контейнера:
+```
+<body flex flex-col overflow-hidden, height: 100dvh>
+  <header flex-shrink-0>                         ← не скроллится
+  </header>
+  <main flex-1 overflow-y-auto native-scroll>    ← скроллится отдельно
+  </main>
+  <div fixed bottom-0 ios26-summary>             ← панель итогов
+  </div>
+  модалки (fixed, вне main)
+</body>
+```
+
+**Ключевые CSS-паттерны скролла (custom.css):**
+- `html, body { overscroll-behavior: none }` — отключает bounce на body
+- `.native-scroll` — включает iOS bounce обратно через `overscroll-behavior-y: auto` + `-webkit-overflow-scrolling: touch`
+- Модалки при открытии блокируют скролл main через `:class="showModal && 'overflow-hidden'"`
+- Модалки с длинным контентом: `max-h-[80vh] overflow-y-auto overscroll-contain`
+
 ## Frontend
 
 ```
 frontend/
-├── index.html      # Список проектов — Alpine.js: dashboard()
-├── project.html    # Редактор проекта — Alpine.js: projectEditor()
+├── index.html      # Dashboard: 3 таба (Активные/Архив/Каталог) — Alpine.js: dashboard()
+├── project.html    # Редактор проекта + экспорт — Alpine.js: projectEditor()
 ├── login.html      # Страница входа
-├── css/custom.css  # Стили + CSS переменные Telegram
+├── css/custom.css  # iOS 26 стили + CSS переменные Telegram
 └── js/
     ├── api.js      # Fetch wrapper с X-Auth-Password
     ├── app.js      # Alpine.js компоненты
@@ -103,23 +147,38 @@ frontend/
 
 Приложение использует стили в духе iOS 26 / Apple HIG:
 
-- `.header-gradient` — хедер с градиентным фоном (сверху непрозрачный → снизу прозрачный)
-- `.grouped-list` — карточки со скруглением 20px
-- `.ios26-inset` — отступы 16px от краёв экрана
+- `.header-gradient` — градиент сверху (непрозрачный) → снизу (прозрачный), контент уходит под него
+- `.grouped-list` — карточки со скруглением 20px, `.grouped-list-item` + `.grouped-list-divider`
+- `.ios26-inset` — margin 16px от краёв экрана
 - `.ios26-modal` / `.ios26-modal-bottom` — модалки со скруглением 20px
+- `.ios26-summary` — fixed bottom panel со скруглением 20px 20px 0 0, тень вверх
 - `.ios26-input` / `.ios26-button` — скругление 12px
-- `.button-group` — группировка кнопок с общим фоном
+- `.native-scroll` — нативный iOS bounce-скролл
 
 **Apple HIG принципы:**
 - Touch targets минимум 44×44 points
 - Скругления: контейнеры 20px, кнопки/инпуты 12px
+- Кнопки в модалках: full-width, stacked vertically (`space-y-3`)
+
+## Каталог и себестоимость
+
+CatalogProduct имеет 12 компонентов себестоимости (синхронизируются из Google Sheets):
+```
+materials, metal, powder, cnc, carpentry, painting,
+upholstery, components, box, logistics, assembly, other
+```
+
+Dashboard tab "Каталог" показывает все товары с фильтрами:
+- Dropdown по названию (base_name) + зависимый dropdown по типу (product_type)
+- Модалка детали с разбивкой себестоимости (показывает только ненулевые компоненты)
 
 ## Telegram Mini App
 
 Интеграция через `telegram.js`:
-- `tg.init()` — expand, theme, safe area
-- `tg.hapticFeedback(type)` — вибрация
+- `tg.init()` — expand, disableVerticalSwipes, theme, safe area
+- `tg.hapticFeedback(type)` — вибрация (light, medium, heavy, success, error)
 - `tg.showBackButton()` / `tg.hideBackButton()`
+- `tg.applySafeArea()` — читает `contentSafeAreaInset` и применяет padding к headers
 
 CSS переменные Telegram в `custom.css`:
 - `--tg-bg-color`, `--tg-text-color`, `--tg-hint-color` и др.
@@ -132,11 +191,14 @@ CSS переменные Telegram в `custom.css`:
 - Поддержка bcrypt хешей (backward compatible с plain text)
 - Rate limiting: 100 req/min глобально, 5 req/min для /api/catalog/sync
 - CSRF токены для мутирующих операций
-- Security headers (CSP, X-Frame-Options и др.)
+- Security headers (CSP с `'unsafe-inline'` для Alpine.js)
 
 ## API Endpoints
 
 **Projects:** `GET/POST /api/projects`, `GET/PUT/DELETE /api/projects/{id}`
+- `GET /api/projects?archived=true` — только архивные
+- `GET /api/projects/{id}/export?format=text|pdf` — экспорт для клиента
+
 **Items:** `POST/PATCH/DELETE /api/projects/{id}/items/{item_id}`
 **Catalog:** `GET /api/catalog/search?q=`, `GET /api/catalog/grouped`, `POST /api/catalog/sync`
 **Health:** `GET /api/health` (публичный)
@@ -147,19 +209,12 @@ CSS переменные Telegram в `custom.css`:
 - **Server:** Timeweb Cloud VPS (176.57.214.150), systemd service `delo-bot`
 - **SSH:** `ssh root@176.57.214.150` (доступ настроен)
 - **Server path:** `/opt/delo-bot`
-
-```bash
-# Деплой
-ssh root@176.57.214.150 "cd /opt/delo-bot && git pull && sudo systemctl restart delo-bot"
-
-# На сервере
-sudo journalctl -u delo-bot -f     # Логи
-sudo systemctl restart delo-bot    # Перезапуск
-```
+- Статические файлы раздаются FastAPI напрямую (без nginx)
 
 ## CI
 
-- `.github/workflows/ci.yml` — тесты на каждый push/PR
+- `.github/workflows/ci.yml` — тесты на каждый push/PR в main/develop
+- Python 3.12, pytest с coverage, ruff linting (optional)
 
 ## Git
 

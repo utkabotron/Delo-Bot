@@ -59,7 +59,7 @@
                         <div class="flex justify-between items-start">
                             <!-- Left: Name + Type -->
                             <div class="min-w-0 flex-1">
-                                <div class="font-medium" x-text="getBaseName(item.name, item.item_type)"></div>
+                                <div class="font-semibold" x-text="getBaseName(item.name, item.item_type)"></div>
                                 <div class="text-sm text-gray-500" x-text="item.item_type"></div>
                             </div>
                             <!-- Right: Subtotal + Price × Qty -->
@@ -75,9 +75,9 @@
 
         <template x-if="!loading && (!project?.items || project.items.length === 0)">
             <div class="ios26-inset mb-4 grouped-list text-center py-8">
-                <div class="text-gray-400 text-4xl mb-3">📦</div>
+                <div class="text-gray-400 text-5xl mb-4">📦</div>
                 <p class="text-gray-500">Нет позиций</p>
-                <p class="text-gray-400 text-sm">Найдите товар в каталоге или добавьте вручную</p>
+                <p class="text-gray-400 text-sm mt-1">Найдите товар в каталоге или добавьте вручную</p>
             </div>
         </template>
     </main>
@@ -167,7 +167,7 @@
                             type="text"
                             x-model="editProject.name"
                             required
-                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500"
+                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                     </div>
                     <div>
@@ -175,7 +175,7 @@
                         <input
                             type="text"
                             x-model="editProject.client"
-                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500"
+                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                     </div>
                     <div>
@@ -183,7 +183,7 @@
                         <textarea
                             x-model="editProject.notes"
                             rows="3"
-                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 resize-none"
+                            class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                             placeholder="Заметки к проекту..."
                         ></textarea>
                     </div>
@@ -196,7 +196,7 @@
                                 min="0"
                                 max="100"
                                 step="0.1"
-                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                         </div>
                         <div>
@@ -206,7 +206,7 @@
                                 x-model="editProject.global_tax"
                                 min="0"
                                 step="0.1"
-                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                         </div>
                     </div>
@@ -262,7 +262,7 @@
                                 x-model="selectedBaseName"
                                 @change="onBaseNameChange()"
                                 required
-                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 bg-white"
+                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                             >
                                 <option value="">Выберите изделие</option>
                                 <template x-for="name in availableNames" :key="name">
@@ -277,7 +277,7 @@
                                 @change="onTypeChange()"
                                 :disabled="!selectedBaseName"
                                 required
-                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
                             >
                                 <option value="">Выберите тип</option>
                                 <template x-for="item in availableTypes" :key="item.type">
@@ -315,7 +315,7 @@
                                 type="number"
                                 x-model="newItem.quantity"
                                 min="1"
-                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-3 py-2 border ios26-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                         </div>
                     </div>
