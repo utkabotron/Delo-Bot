@@ -99,6 +99,21 @@ frontend/
 - Для фокуса в модалках: `setTimeout(() => el.focus(), 100)` вместо `$nextTick`
 - События: `@blur` надёжнее чем `@change` на мобильных
 
+## iOS 26 Style Classes (custom.css)
+
+Приложение использует стили в духе iOS 26 / Apple HIG:
+
+- `.header-gradient` — хедер с градиентным фоном (сверху непрозрачный → снизу прозрачный)
+- `.grouped-list` — карточки со скруглением 20px
+- `.ios26-inset` — отступы 16px от краёв экрана
+- `.ios26-modal` / `.ios26-modal-bottom` — модалки со скруглением 20px
+- `.ios26-input` / `.ios26-button` — скругление 12px
+- `.button-group` — группировка кнопок с общим фоном
+
+**Apple HIG принципы:**
+- Touch targets минимум 44×44 points
+- Скругления: контейнеры 20px, кнопки/инпуты 12px
+
 ## Telegram Mini App
 
 Интеграция через `telegram.js`:
