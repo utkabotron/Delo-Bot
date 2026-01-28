@@ -460,6 +460,7 @@ input[type="number"] {
     background: rgba(247, 247, 247, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    margin-bottom: 8px;
 }
 
 /* iOS Navigation Bar (Apple HIG) */
