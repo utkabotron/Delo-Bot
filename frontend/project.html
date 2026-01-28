@@ -46,7 +46,7 @@
         <div class="divide-y divide-gray-200">
             <template x-for="item in project?.items || []" :key="item.id">
                 <div class="swipe-container" x-init="initSwipeItem($el, item.id)">
-                    <div class="swipe-content px-4 py-4">
+                    <div class="swipe-content bg-white px-4 py-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-medium text-gray-800 truncate" x-text="getBaseName(item.name, item.item_type)"></h3>
