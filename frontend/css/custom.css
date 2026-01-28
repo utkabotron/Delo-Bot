@@ -1,3 +1,15 @@
+/* Tabular (monospace) numbers */
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Apply tabular nums to all numeric displays */
+.font-semibold,
+.font-bold,
+.font-medium {
+    font-variant-numeric: tabular-nums;
+}
+
 /* Telegram Theme Variables */
 :root {
     --tg-bg-color: #ffffff;
