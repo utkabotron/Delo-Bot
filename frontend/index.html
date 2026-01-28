@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/custom.css">
 </head>
-<body class="bg-gray-100 min-h-screen" x-data="dashboard()" x-init="init()">
+<body class="bg-gray-100 min-h-screen" x-data="dashboard()" x-init="init()" :class="showCatalogDetail && 'overflow-hidden'">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header (Apple Large Title style) -->
     <header class="sticky top-0 z-10 safe-top header-gradient">
@@ -261,7 +261,7 @@
         class="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
         @click.self="showCatalogDetail = false"
     >
-        <div class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4 max-h-[80vh] overflow-y-auto">
+        <div class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4 max-h-[80vh] overflow-y-auto overscroll-contain">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h2 class="text-xl font-bold" x-text="selectedCatalogItem?.base_name"></h2>
