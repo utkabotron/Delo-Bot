@@ -149,7 +149,8 @@ function dashboard() {
         },
 
         async loadProjects() {
-            this.loading = true;
+            const isFirstLoad = this.projects.length === 0 && this.loading;
+            if (isFirstLoad) this.loading = true;
             try {
                 this.projects = await api.projects.list(this.activeTab === 'archived');
             } catch (error) {
