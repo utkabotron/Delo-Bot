@@ -26,6 +26,14 @@ const api = {
             headers,
         });
 
+        // Обработка неавторизованного доступа
+        if (response.status === 401) {
+            // Пароль неверный или устарел - очищаем и редиректим на логин
+            localStorage.removeItem('app_password');
+            window.location.href = '/login';
+            throw new Error('Unauthorized');
+        }
+
         if (!response.ok) {
             const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
             throw new Error(error.detail || `HTTP ${response.status}`);
@@ -96,6 +104,11 @@ const api = {
                 headers['X-Auth-Password'] = password;
             }
             const response = await fetch(`${API_BASE}/projects/${projectId}/export?format=${format}`, { headers });
+            if (response.status === 401) {
+                localStorage.removeItem('app_password');
+                window.location.href = '/login';
+                throw new Error('Unauthorized');
+            }
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -109,6 +122,11 @@ const api = {
                 headers['X-Auth-Password'] = password;
             }
             const response = await fetch(`${API_BASE}/projects/${projectId}/export?format=pdf`, { headers });
+            if (response.status === 401) {
+                localStorage.removeItem('app_password');
+                window.location.href = '/login';
+                throw new Error('Unauthorized');
+            }
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }

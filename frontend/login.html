@@ -47,17 +47,24 @@
             errorDiv.classList.add('hidden');
 
             try {
-                const response = await fetch('/api/health', {
+                // Используем защищенный endpoint для реальной проверки пароля
+                const response = await fetch('/api/projects', {
                     headers: {
                         'X-Auth-Password': password
                     }
                 });
 
                 if (response.ok) {
+                    // Пароль правильный, сохраняем и переходим
                     localStorage.setItem('app_password', password);
                     window.location.href = '/';
-                } else {
+                } else if (response.status === 401) {
+                    // Неверный пароль
                     errorDiv.textContent = 'Неверный пароль';
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    // Другая ошибка
+                    errorDiv.textContent = `Ошибка: ${response.status}`;
                     errorDiv.classList.remove('hidden');
                 }
             } catch (err) {
@@ -69,10 +76,16 @@
         // Если уже есть пароль, проверим его
         const savedPassword = localStorage.getItem('app_password');
         if (savedPassword) {
-            fetch('/api/health', {
+            fetch('/api/projects', {
                 headers: { 'X-Auth-Password': savedPassword }
             }).then(r => {
-                if (r.ok) window.location.href = '/';
+                if (r.ok) {
+                    // Пароль валиден, переходим на главную
+                    window.location.href = '/';
+                } else if (r.status === 401) {
+                    // Пароль устарел или неверный, очищаем
+                    localStorage.removeItem('app_password');
+                }
             });
         }
     </script>
