@@ -139,18 +139,21 @@
         <!-- Catalog -->
         <div x-show="activeTab === 'catalog' && !loading">
             <!-- Filters -->
-            <div class="ios26-inset mb-4 space-y-2">
-                <input
-                    type="text"
+            <div class="ios26-inset mb-4 grid grid-cols-2 gap-2">
+                <select
                     x-model="catalogFilter.name"
-                    @input="filterCatalog()"
-                    placeholder="Поиск по названию..."
-                    class="w-full px-4 py-2 border ios26-input bg-white focus:ring-2 focus:ring-blue-500"
+                    @change="filterCatalog()"
+                    class="w-full px-3 py-2 border ios26-input bg-white focus:ring-2 focus:ring-blue-500"
                 >
+                    <option value="">Все названия</option>
+                    <template x-for="name in catalogNames" :key="name">
+                        <option :value="name" x-text="name"></option>
+                    </template>
+                </select>
                 <select
                     x-model="catalogFilter.type"
                     @change="filterCatalog()"
-                    class="w-full px-4 py-2 border ios26-input bg-white focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-3 py-2 border ios26-input bg-white focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="">Все типы</option>
                     <template x-for="type in catalogTypes" :key="type">

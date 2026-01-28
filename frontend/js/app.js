@@ -118,6 +118,7 @@ function dashboard() {
         // Catalog
         catalogItems: [],
         filteredCatalog: [],
+        catalogNames: [],
         catalogTypes: [],
         catalogFilter: {
             name: '',
@@ -164,7 +165,8 @@ function dashboard() {
             this.loading = true;
             try {
                 this.catalogItems = await api.catalog.grouped();
-                // Extract unique types
+                // Extract unique names and types
+                this.catalogNames = [...new Set(this.catalogItems.map(i => i.base_name))].sort();
                 this.catalogTypes = [...new Set(this.catalogItems.map(i => i.product_type))].sort();
                 this.filterCatalog();
             } catch (error) {
@@ -178,11 +180,7 @@ function dashboard() {
             let items = this.catalogItems;
 
             if (this.catalogFilter.name) {
-                const query = this.catalogFilter.name.toLowerCase();
-                items = items.filter(i =>
-                    i.base_name.toLowerCase().includes(query) ||
-                    i.name.toLowerCase().includes(query)
-                );
+                items = items.filter(i => i.base_name === this.catalogFilter.name);
             }
 
             if (this.catalogFilter.type) {
