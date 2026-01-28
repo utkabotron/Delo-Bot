@@ -208,13 +208,9 @@ span.text-orange-600 {
     /* Color already defined above, just ensure it's not overridden */
 }
 
-/* Allow bounce scroll on body but prevent pull-to-refresh */
-html {
-    overscroll-behavior-x: none;
-}
-
-body {
-    overscroll-behavior: auto;
+/* Prevent pull-to-refresh on mobile */
+html, body {
+    overscroll-behavior: none;
 }
 
 /* Smooth scrolling and dynamic viewport height */
@@ -224,21 +220,11 @@ html {
     height: 100vh; /* Fallback for older browsers */
 }
 
-/* Native iOS scrolling with bounce effect */
+/* Native iOS scrolling */
 .native-scroll {
     -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-    overscroll-behavior-y: auto;
-}
-
-/* Wrapper inside native-scroll to enable bounce with little content */
-.native-scroll > *:last-child {
-    margin-bottom: 1px;
-}
-
-/* Force minimum scrollable area */
-.scroll-content {
-    min-height: calc(100% + 1px);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
 }
 
 /* Hide scrollbar but keep functionality */
@@ -471,26 +457,13 @@ input[type="number"] {
 
 /* Header gradient background (fade out at bottom) */
 .header-gradient {
-    position: relative;
-    z-index: 10;
-    background: transparent;
-}
-
-.header-gradient::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: -24px;
     background: linear-gradient(
         to bottom,
-        rgb(247, 247, 247) 0%,
-        rgb(247, 247, 247) 60%,
+        var(--tg-secondary-bg-color) 0%,
+        var(--tg-secondary-bg-color) 50%,
         rgba(247, 247, 247, 0) 100%
     );
-    z-index: -1;
-    pointer-events: none;
+    padding-bottom: 8px;
 }
 
 /* iOS Navigation Bar (Apple HIG) */
