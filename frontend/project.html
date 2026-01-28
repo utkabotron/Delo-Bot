@@ -49,8 +49,8 @@
                     <!-- Разделитель (не для первого элемента) -->
                     <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
 
-                    <!-- Item row -->
-                    <div class="grouped-list-item">
+                    <!-- Item row (tap to edit) -->
+                    <div class="grouped-list-item cursor-pointer active:bg-gray-50" @click="openQuantityModal(item)">
                         <!-- Row 1: Name · Type + Price -->
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-1 min-w-0 flex-1">
@@ -61,24 +61,9 @@
                             <div class="font-semibold text-right pl-2 whitespace-nowrap" x-text="formatMoney(item.subtotal) + ' ₽'"></div>
                         </div>
 
-                        <!-- Row 2: Stepper + Details -->
-                        <div class="flex justify-between items-center mt-2">
-                            <!-- iOS Stepper -->
-                            <div class="ios-stepper">
-                                <button @click="updateQuantity(item, -1)" @mousedown.prevent>−</button>
-                                <span @click="openQuantityModal(item)" class="value" x-text="item.quantity"></span>
-                                <button @click="updateQuantity(item, 1)" @mousedown.prevent>+</button>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <span class="text-sm text-gray-500" x-text="formatMoney(item.base_price) + ' × ' + item.quantity"></span>
-                                <button @click="removeItem(item.id)" class="text-gray-400 hover:text-red-500 p-1 transition">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
-                            </div>
+                        <!-- Row 2: Details -->
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-sm text-gray-500" x-text="formatMoney(item.base_price) + ' × ' + item.quantity"></span>
                         </div>
                     </div>
                 </div>
@@ -318,11 +303,26 @@
         @click.self="showQuantityModal = false"
     >
         <div class="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-6">
-            <h2 class="text-xl font-bold mb-4">Количество</h2>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xl font-bold" x-text="editingItem ? getBaseName(editingItem.name, editingItem.item_type) : ''"></h2>
+                    <p class="text-sm text-gray-500" x-text="editingItem?.item_type || ''"></p>
+                </div>
+                <button
+                    type="button"
+                    @click="removeItem(editingItem?.id); showQuantityModal = false"
+                    class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
             <form @submit.prevent="saveQuantityFromModal">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Введите количество</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Количество</label>
                         <input
                             id="quantity-modal-input"
                             type="number"
