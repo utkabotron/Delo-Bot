@@ -1,12 +1,28 @@
-/* Tabular (monospace) numbers */
-.tabular-nums {
+/* Monospace numbers */
+.mono-nums {
+    font-family: "SF Mono", "Roboto Mono", "Cascadia Mono", "Consolas", ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
 }
 
-/* Apply tabular nums to all numeric displays */
+/* Apply monospace to all numeric displays (prices, quantities, etc.) */
 .font-semibold,
 .font-bold,
-.font-medium {
+.font-medium,
+.text-sm,
+.text-xs {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Specifically for monetary values */
+[x-text*="formatMoney"],
+[x-text*="subtotal"],
+[x-text*="profit"],
+[x-text*="revenue"],
+[x-text*="cost"],
+[x-text*="price"],
+[x-text*="quantity"],
+[x-text*="margin"] {
+    font-family: "SF Mono", "Roboto Mono", "Cascadia Mono", "Consolas", ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
 }
 
