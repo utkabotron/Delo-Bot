@@ -51,19 +51,17 @@
 
                     <!-- Item row (tap to edit) -->
                     <div class="grouped-list-item cursor-pointer active:bg-gray-50" @click="openQuantityModal(item)">
-                        <!-- Row 1: Name · Type + Price -->
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-1 min-w-0 flex-1">
-                                <span class="font-medium truncate" x-text="getBaseName(item.name, item.item_type)"></span>
-                                <span class="text-gray-400">·</span>
-                                <span class="text-gray-500 text-sm truncate" x-text="item.item_type"></span>
+                        <div class="flex justify-between items-start">
+                            <!-- Left: Name + Type -->
+                            <div class="min-w-0 flex-1">
+                                <div class="font-medium truncate" x-text="getBaseName(item.name, item.item_type)"></div>
+                                <div class="text-sm text-gray-500 truncate" x-text="item.item_type"></div>
                             </div>
-                            <div class="font-semibold text-right pl-2 whitespace-nowrap" x-text="formatMoney(item.subtotal) + ' ₽'"></div>
-                        </div>
-
-                        <!-- Row 2: Details -->
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="text-sm text-gray-500" x-text="formatMoney(item.base_price) + ' × ' + item.quantity"></span>
+                            <!-- Right: Subtotal + Price × Qty -->
+                            <div class="text-right pl-3 flex-shrink-0">
+                                <div class="font-semibold" x-text="formatMoney(item.subtotal) + ' ₽'"></div>
+                                <div class="text-sm text-gray-500" x-text="formatMoney(item.base_price) + ' × ' + item.quantity"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
