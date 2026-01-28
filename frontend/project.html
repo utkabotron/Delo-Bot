@@ -12,7 +12,7 @@
 <body class="bg-gray-100 flex flex-col overflow-hidden" style="height: 100dvh; height: 100vh;" x-data="projectEditor()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header (Apple Large Title style) -->
-    <header class="flex-shrink-0 z-10 safe-top">
+    <header class="flex-shrink-0 z-10 safe-top header-gradient">
         <div class="px-4 pt-4 pb-3 flex items-center justify-between gap-4">
             <!-- Left: Large Title (тап = настройки) -->
             <div
@@ -35,9 +35,9 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto native-scroll pb-60 pt-2">
+    <main class="flex-1 overflow-y-auto native-scroll pb-60">
         <!-- Items List — Grouped container (iOS 26: 16px inset) -->
-        <div class="ios26-inset my-4 grouped-list" x-show="project?.items?.length > 0">
+        <div class="ios26-inset mt-1 mb-4 grouped-list" x-show="project?.items?.length > 0">
             <template x-for="(item, index) in project?.items || []" :key="item.id">
                 <div>
                     <!-- Разделитель (не для первого элемента) -->
@@ -63,7 +63,7 @@
         </div>
 
         <template x-if="!loading && (!project?.items || project.items.length === 0)">
-            <div class="ios26-inset my-4 grouped-list text-center py-8">
+            <div class="ios26-inset mt-1 mb-4 grouped-list text-center py-8">
                 <div class="text-gray-400 text-4xl mb-3">📦</div>
                 <p class="text-gray-500">Нет позиций</p>
                 <p class="text-gray-400 text-sm">Найдите товар в каталоге или добавьте вручную</p>
