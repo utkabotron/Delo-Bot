@@ -36,7 +36,7 @@ cd backend && alembic upgrade head                              # Примени
 cd backend && alembic revision --autogenerate -m "Description"  # Создать новую
 cd backend && alembic downgrade -1                              # Откатить
 
-# Синхронизация каталога
+# Синхронизация каталога (или через кнопку 🔄 в UI)
 curl -X POST -H "X-Auth-Password: password" http://localhost:8000/api/catalog/sync
 ```
 
@@ -129,13 +129,18 @@ CSS переменные Telegram в `custom.css`:
 ## Deployment
 
 - **Production:** https://delo.brdg.tools
-- **Server:** Timeweb Cloud VPS, systemd service `delo-bot`
+- **Server:** Timeweb Cloud VPS (176.57.214.150), systemd service `delo-bot`
+- **SSH:** `ssh root@176.57.214.150` (доступ настроен)
+- **Server path:** `/opt/delo-bot`
 - **Auto-deploy:** Push to `main` → GitHub Actions → SSH deploy + миграции
 
 ```bash
 # На сервере
 sudo journalctl -u delo-bot -f     # Логи
 sudo systemctl restart delo-bot    # Перезапуск
+
+# Ручной деплой
+ssh root@176.57.214.150 "cd /opt/delo-bot && git pull && sudo systemctl restart delo-bot"
 ```
 
 ## CI/CD
