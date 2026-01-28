@@ -427,6 +427,17 @@ input[type="number"] {
     margin-right: 16px;
 }
 
+/* Header gradient background (fade out at bottom) */
+.header-gradient {
+    background: linear-gradient(
+        to bottom,
+        var(--tg-secondary-bg-color) 0%,
+        var(--tg-secondary-bg-color) 50%,
+        rgba(247, 247, 247, 0) 100%
+    );
+    padding-bottom: 16px;
+}
+
 /* iOS Navigation Bar (Apple HIG) */
 .ios-navbar {
     background: var(--tg-section-bg-color);
