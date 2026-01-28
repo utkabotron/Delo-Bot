@@ -37,6 +37,23 @@
     --tg-secondary-bg-color: #f7f7f7;
     --tg-section-bg-color: #ffffff;
     --tg-subtitle-text-color: #707070;  /* WCAG AA compliant: contrast 4.54:1 on white */
+    --tg-border-color: rgba(108, 117, 125, 0.35);  /* Light theme borders */
+}
+
+/* Dark theme support for browser (not Telegram) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tg-bg-color: #000000;
+        --tg-text-color: #ffffff;
+        --tg-hint-color: #8e8e93;           /* iOS dark theme hint color */
+        --tg-link-color: #0a84ff;           /* iOS dark theme blue */
+        --tg-button-color: #0a84ff;
+        --tg-button-text-color: #ffffff;
+        --tg-secondary-bg-color: #1c1c1e;   /* iOS dark theme secondary bg */
+        --tg-section-bg-color: #2c2c2e;     /* iOS dark theme grouped bg */
+        --tg-subtitle-text-color: #ebebf5;  /* iOS dark theme secondary label (60% opacity) */
+        --tg-border-color: rgba(84, 84, 88, 0.65);  /* iOS dark theme separator (opaque) */
+    }
 }
 
 /* Apply Telegram theme when available */
@@ -47,6 +64,10 @@ body {
 
 /* Override Tailwind classes to use Telegram theme */
 .bg-gray-100 {
+    background-color: var(--tg-secondary-bg-color) !important;
+}
+
+.bg-gray-200 {
     background-color: var(--tg-secondary-bg-color) !important;
 }
 
@@ -72,7 +93,6 @@ body {
 
 .text-gray-400 {
     color: var(--tg-hint-color) !important;
-    opacity: 0.85;  /* Improved from 0.6 for better contrast */
 }
 
 /* Borders using hint color with alpha channel (not opacity to avoid affecting child elements) */
@@ -81,7 +101,7 @@ body {
 .border-b,
 .border-l,
 .border-r {
-    border-color: rgba(108, 117, 125, 0.35) !important;  /* #6c757d with 35% opacity */
+    border-color: var(--tg-border-color) !important;
 }
 
 /* Buttons */
@@ -141,12 +161,10 @@ textarea:read-only {
 /* Hover states */
 .hover\:bg-gray-50:hover {
     background-color: var(--tg-secondary-bg-color) !important;
-    opacity: 0.8;
 }
 
 .hover\:bg-gray-100:hover {
     background-color: var(--tg-secondary-bg-color) !important;
-    opacity: 0.9;
 }
 
 .hover\:bg-gray-200:hover {
@@ -155,18 +173,17 @@ textarea:read-only {
 
 .hover\:bg-blue-50:hover {
     background-color: var(--tg-button-color) !important;
-    opacity: 0.1;
 }
 
 /* Specific fixes for badges/pills */
 .bg-gray-100.text-gray-600 {
     background-color: var(--tg-secondary-bg-color) !important;
-    color: #5a5a5a !important;  /* WCAG AA compliant on #f7f7f7: contrast ~4.6:1 */
+    color: var(--tg-subtitle-text-color) !important;
 }
 
 .bg-gray-100.text-gray-500 {
     background-color: var(--tg-secondary-bg-color) !important;
-    color: var(--tg-hint-color) !important;  /* #6c757d, WCAG AA compliant: contrast 5.74:1 */
+    color: var(--tg-hint-color) !important;
 }
 
 /* Summary panel labels - use hint color for secondary text */
@@ -293,7 +310,7 @@ input[type="number"] {
 .ios-stepper {
     display: inline-flex;
     align-items: center;
-    border: 1px solid rgba(108, 117, 125, 0.3);
+    border: 1px solid var(--tg-border-color);
     border-radius: 8px;
     overflow: hidden;
     background: var(--tg-section-bg-color);
@@ -325,8 +342,8 @@ input[type="number"] {
     justify-content: center;
     font-weight: 500;
     color: var(--tg-text-color);
-    border-left: 1px solid rgba(108, 117, 125, 0.3);
-    border-right: 1px solid rgba(108, 117, 125, 0.3);
+    border-left: 1px solid var(--tg-border-color);
+    border-right: 1px solid var(--tg-border-color);
     cursor: pointer;
 }
 
@@ -344,7 +361,7 @@ input[type="number"] {
 
 .grouped-list-divider {
     height: 1px;
-    background: rgba(108, 117, 125, 0.2);
+    background: var(--tg-border-color);
     margin-left: 16px;
     margin-right: 16px;
 }
@@ -457,12 +474,7 @@ input[type="number"] {
 
 /* Header gradient background (fade out at bottom) */
 .header-gradient {
-    background: linear-gradient(
-        to bottom,
-        var(--tg-secondary-bg-color) 0%,
-        var(--tg-secondary-bg-color) 50%,
-        rgba(247, 247, 247, 0) 100%
-    );
+    background: var(--tg-secondary-bg-color);
     padding-bottom: 16px;
 }
 
@@ -480,11 +492,7 @@ input[type="number"] {
     left: 0;
     right: 0;
     height: 20px;
-    background: linear-gradient(
-        to bottom,
-        var(--tg-secondary-bg-color) 0%,
-        rgba(247, 247, 247, 0) 100%
-    );
+    background: transparent;
     pointer-events: none;
 }
 
