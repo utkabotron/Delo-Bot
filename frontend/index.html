@@ -100,7 +100,7 @@
                 </div>
             </template>
 
-            <div class="ios26-inset mb-4 grouped-list" x-show="projects.length > 0">
+            <div class="ios26-inset mt-2 mb-4 grouped-list" x-show="projects.length > 0">
                 <template x-for="(project, index) in projects" :key="project.id">
                     <div>
                         <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
@@ -169,7 +169,7 @@
                 </div>
             </template>
 
-            <div class="ios26-inset mb-4 grouped-list" x-show="filteredCatalog.length > 0">
+            <div class="ios26-inset mt-2 mb-4 grouped-list" x-show="filteredCatalog.length > 0">
                 <template x-for="(item, index) in filteredCatalog" :key="item.name + item.product_type">
                     <div>
                         <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
