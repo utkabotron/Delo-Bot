@@ -176,6 +176,22 @@ function dashboard() {
             }
         },
 
+        get availableTypes() {
+            let items = this.catalogItems;
+            if (this.catalogFilter.name) {
+                items = items.filter(i => i.base_name === this.catalogFilter.name);
+            }
+            return [...new Set(items.map(i => i.product_type))].sort();
+        },
+
+        onNameFilterChange() {
+            // Reset type filter if current type is not available for selected name
+            if (this.catalogFilter.type && !this.availableTypes.includes(this.catalogFilter.type)) {
+                this.catalogFilter.type = '';
+            }
+            this.filterCatalog();
+        },
+
         filterCatalog() {
             let items = this.catalogItems;
 
