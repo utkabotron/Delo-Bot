@@ -40,8 +40,8 @@ const api = {
 
     // Projects
     projects: {
-        list(includeArchived = false) {
-            const params = includeArchived ? '?include_archived=true' : '';
+        list(archivedOnly = false) {
+            const params = archivedOnly ? '?archived=true' : '';
             return api.request(`/projects${params}`);
         },
 

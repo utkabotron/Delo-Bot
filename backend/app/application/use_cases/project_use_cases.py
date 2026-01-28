@@ -51,8 +51,8 @@ class ProjectUseCases:
             is_archived=project.is_archived,
         )
 
-    def get_all_projects(self, include_archived: bool = False) -> list[ProjectResponseDTO]:
-        projects = self.repository.get_all(include_archived=include_archived)
+    def get_all_projects(self, archived_only: bool = False) -> list[ProjectResponseDTO]:
+        projects = self.repository.get_all(archived_only=archived_only)
         return [self._to_response(p) for p in projects]
 
     def get_project(self, project_id: int) -> Optional[ProjectResponseDTO]:

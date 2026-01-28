@@ -23,10 +23,10 @@ def get_use_cases(db: Session = Depends(get_db)) -> ProjectUseCases:
 
 @router.get("", response_model=list[ProjectResponseDTO])
 def get_projects(
-    include_archived: bool = Query(False, description="Include archived projects"),
+    archived: bool = Query(False, description="Show archived projects only"),
     use_cases: ProjectUseCases = Depends(get_use_cases),
 ):
-    return use_cases.get_all_projects(include_archived=include_archived)
+    return use_cases.get_all_projects(archived_only=archived)
 
 
 @router.post("", response_model=ProjectResponseDTO, status_code=201)

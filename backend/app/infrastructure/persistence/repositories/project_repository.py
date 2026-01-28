@@ -35,14 +35,14 @@ class SQLAlchemyProjectRepository(IProjectRepository):
             is_archived=model.is_archived or False,
         )
 
-    def get_all(self, include_archived: bool = False) -> list[Project]:
+    def get_all(self, archived_only: bool = False) -> list[Project]:
         # Use joinedload to prevent N+1 queries when accessing items
         query = (
             self.db.query(ProjectModel)
             .options(joinedload(ProjectModel.items))
         )
-        if not include_archived:
-            query = query.filter(ProjectModel.is_archived == False)
+        # Filter by archive status
+        query = query.filter(ProjectModel.is_archived == archived_only)
         models = query.order_by(ProjectModel.created_at.desc()).all()
         return [self._to_entity(m) for m in models]
 
