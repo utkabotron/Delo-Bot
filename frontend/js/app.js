@@ -601,6 +601,25 @@ function projectEditor() {
         async exportTelegram() {
             try {
                 const text = await api.projects.export(this.project.id, 'text');
+
+                // Try to share via Web Share API
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            text: text,
+                        });
+                        tg.hapticFeedback('success');
+                        this.showExportModal = false;
+                        return;
+                    } catch (e) {
+                        // User cancelled or share failed, fall back to clipboard
+                        if (e.name === 'AbortError') {
+                            return;
+                        }
+                    }
+                }
+
+                // Fallback: copy to clipboard
                 await navigator.clipboard.writeText(text);
                 tg.hapticFeedback('success');
                 this.showExportModal = false;
@@ -615,20 +634,36 @@ function projectEditor() {
         async exportPdf() {
             try {
                 const blob = await api.projects.exportPdf(this.project.id);
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${this.project.name || 'project'}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                tg.hapticFeedback('success');
-                this.showExportModal = false;
+                const fileName = `${this.project.name || 'project'}.pdf`;
+                const file = new File([blob], fileName, { type: 'application/pdf' });
+
+                // Try to share via Web Share API (works in Telegram)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: this.project.name,
+                    });
+                    tg.hapticFeedback('success');
+                    this.showExportModal = false;
+                } else {
+                    // Fallback: download file
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    tg.hapticFeedback('success');
+                    this.showExportModal = false;
+                }
             } catch (error) {
                 console.error('Failed to export to PDF:', error);
                 tg.hapticFeedback('error');
-                alert('Ошибка экспорта PDF');
+                if (error.name !== 'AbortError') {
+                    alert('Ошибка экспорта PDF');
+                }
             }
         },
 
