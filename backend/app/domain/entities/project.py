@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from typing import Optional
 from decimal import Decimal
 
@@ -30,7 +30,7 @@ class Project:
     client: str = ""
     global_discount: Decimal = Decimal("0")
     global_tax: Decimal = Decimal("0")
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     items: list[ProjectItem] = field(default_factory=list)
 
     @property
