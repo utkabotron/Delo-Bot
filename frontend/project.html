@@ -9,13 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/custom.css">
 </head>
-<body class="bg-gray-100 overflow-hidden" style="height: 100dvh; height: 100vh;" x-data="projectEditor()" x-init="init()">
+<body class="bg-gray-100 flex flex-col overflow-hidden" style="height: 100dvh; height: 100vh;" x-data="projectEditor()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
-
-    <!-- Single scrollable container -->
-    <main class="h-full overflow-y-auto native-scroll">
     <!-- Header (Apple Large Title style) -->
-    <header class="sticky top-0 z-10 safe-top header-gradient">
+    <header class="flex-shrink-0 z-10 safe-top header-gradient-overlay">
         <div class="px-4 pt-6 pb-4 flex items-center justify-between gap-4">
             <!-- Left: Large Title (тап = настройки) -->
             <div
@@ -47,6 +44,9 @@
             </div>
         </div>
     </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto native-scroll">
         <div class="min-h-[calc(100%+1px)] pb-60">
         <!-- Items List — Grouped container (iOS 26: 16px inset) -->
         <div class="ios26-inset mb-4 grouped-list" x-show="project?.items?.length > 0">
