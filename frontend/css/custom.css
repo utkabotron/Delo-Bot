@@ -268,8 +268,8 @@ input[type="number"] {
 }
 
 .swipe-content {
-    position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: 100% 80px;
     transition: transform 0.2s ease-out;
 }
 
@@ -278,13 +278,10 @@ input[type="number"] {
 }
 
 .swipe-card-content {
-    flex: 1;
-    min-width: 100%;
     background-color: var(--tg-section-bg-color);
 }
 
 .swipe-delete-btn {
-    flex-shrink: 0;
     width: 80px;
     background-color: #ef4444;
     color: white;
