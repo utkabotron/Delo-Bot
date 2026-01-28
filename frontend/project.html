@@ -105,19 +105,25 @@
                 </template>
             </div>
 
+            <!-- Divider -->
+            <div class="-mx-4 my-3 border-t border-dashed" style="border-color: rgba(0,0,0,0.12);"></div>
+
             <!-- Секция 2: Итого (главное) -->
-            <div class="border-t pt-3 mt-2 flex justify-between font-bold text-lg">
+            <div class="flex justify-between font-bold text-lg">
                 <span>Итого</span>
                 <span x-text="formatMoney(project?.summary?.revenue || 0) + ' ₽'"></span>
             </div>
 
+            <!-- Divider -->
+            <div class="-mx-4 my-3 border-t border-dashed" style="border-color: rgba(0,0,0,0.12);"></div>
+
             <!-- Секция 3: Себестоимость + Прибыль -->
-            <div class="space-y-2 pt-2">
+            <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">Себестоимость</span>
                     <span class="text-gray-600" x-text="formatMoney(project?.summary?.total_cost || 0) + ' ₽'"></span>
                 </div>
-                <div class="border-t pt-2 flex justify-between font-medium">
+                <div class="flex justify-between font-medium">
                     <span>Прибыль</span>
                     <span :class="(project?.summary?.profit || 0) >= 0 ? 'text-green-600' : 'text-red-600'">
                         <span x-text="formatMoney(project?.summary?.profit || 0) + ' ₽'"></span>
