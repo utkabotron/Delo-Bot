@@ -318,5 +318,6 @@ input[type="number"] {
     height: 1px;
     background: rgba(108, 117, 125, 0.2);
     margin-left: 16px;
+    margin-right: 16px;
 }
 
