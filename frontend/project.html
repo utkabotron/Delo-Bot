@@ -19,8 +19,8 @@
                 @click="showSettingsModal = true"
                 class="min-w-0 flex-1 cursor-pointer active:opacity-50"
             >
-                <h1 class="text-lg font-bold text-gray-800 truncate" x-text="project?.name || 'Загрузка...'"></h1>
-                <p class="text-sm text-gray-500 truncate" x-show="project?.client" x-text="project?.client"></p>
+                <h1 class="text-lg font-bold text-gray-800 truncate leading-tight" x-text="project?.name || 'Загрузка...'"></h1>
+                <p class="text-xs text-gray-500 truncate" x-show="project?.client" x-text="project?.client"></p>
             </div>
             <!-- Right: Add button -->
             <div class="button-group">
