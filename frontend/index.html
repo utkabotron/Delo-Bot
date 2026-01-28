@@ -53,39 +53,36 @@
             </div>
         </template>
 
-        <div class="divide-y divide-gray-200">
-            <template x-for="project in projects" :key="project.id">
-                <div
-                    @click="openProject(project.id)"
-                    class="bg-white px-4 py-4 cursor-pointer"
-                >
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-semibold text-gray-800" x-text="project.name"></h3>
-                            <p class="text-sm text-gray-500" x-text="project.client || 'Без клиента'"></p>
+        <div class="mx-4 my-4 grouped-list" x-show="projects.length > 0">
+            <template x-for="(project, index) in projects" :key="project.id">
+                <div>
+                    <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
+                    <div
+                        @click="openProject(project.id)"
+                        class="grouped-list-item cursor-pointer active:bg-gray-50"
+                    >
+                        <div class="flex justify-between items-start">
+                            <!-- Left: Name + Client -->
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold" x-text="project.name"></div>
+                                <div class="text-sm text-gray-500" x-text="project.client || 'Без клиента'"></div>
+                            </div>
+                            <!-- Right: Revenue + Items count -->
+                            <div class="text-right pl-3 flex-shrink-0">
+                                <div class="font-semibold" :class="project.summary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
+                                    <span x-text="formatMoney(project.summary.revenue)"></span> ₽
+                                </div>
+                                <div class="text-sm text-gray-500" x-text="formatItems(project.items?.length || 0)"></div>
+                            </div>
                         </div>
-                        <button
-                            @click.stop="deleteProject(project.id)"
-                            class="ml-2 p-1 text-gray-400 hover:text-red-500 transition flex-shrink-0"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-500" x-text="formatItems(project.items?.length || 0)"></span>
-                        <span class="font-medium" :class="project.summary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
-                            <span x-text="formatMoney(project.summary.revenue)"></span> ₽
-                        </span>
-                    </div>
-                    <div class="mt-2 flex gap-2 text-xs">
-                        <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">
-                            Прибыль: <span x-text="formatMoney(project.summary.profit)"></span> ₽
-                        </span>
-                        <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">
-                            Маржа: <span x-text="parseFloat(project.summary.margin || 0).toFixed(1)"></span>%
-                        </span>
+                        <div class="mt-2 flex gap-2 text-xs">
+                            <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">
+                                Прибыль: <span x-text="formatMoney(project.summary.profit)"></span> ₽
+                            </span>
+                            <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">
+                                Маржа: <span x-text="parseFloat(project.summary.margin || 0).toFixed(1)"></span>%
+                            </span>
+                        </div>
                     </div>
                 </div>
             </template>

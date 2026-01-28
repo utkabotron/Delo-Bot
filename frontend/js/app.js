@@ -483,6 +483,18 @@ function projectEditor() {
             }
         },
 
+        async deleteProject() {
+            if (!confirm('Удалить проект?')) return;
+            try {
+                await api.projects.delete(this.project.id);
+                tg.hapticFeedback('success');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Failed to delete project:', error);
+                tg.hapticFeedback('error');
+            }
+        },
+
         goBack() {
             tg.hideBackButton();
             window.location.href = '/';
