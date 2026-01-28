@@ -42,47 +42,43 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto native-scroll pb-60">
-        <!-- Items List -->
-        <div class="divide-y divide-gray-200">
-            <template x-for="item in project?.items || []" :key="item.id">
-                <div class="bg-white px-4 py-4">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-medium text-gray-800 truncate" x-text="getBaseName(item.name, item.item_type)"></h3>
-                            <p class="text-sm text-gray-500" x-text="item.item_type"></p>
-                        </div>
-                        <button
-                            @click="removeItem(item.id)"
-                            class="ml-2 p-1 text-gray-400 hover:text-red-500 transition flex-shrink-0"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="mt-2 flex justify-between items-center">
-                        <div class="flex items-center gap-1">
-                            <button
-                                @click="updateQuantity(item, -1)"
-                                @mousedown.prevent
-                                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-medium flex-shrink-0"
-                            >&minus;</button>
+        <!-- Items List — Grouped container -->
+        <div class="mx-4 my-4 grouped-list" x-show="project?.items?.length > 0">
+            <template x-for="(item, index) in project?.items || []" :key="item.id">
+                <div>
+                    <!-- Разделитель (не для первого элемента) -->
+                    <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
 
-                            <span
-                                @click="openQuantityModal(item)"
-                                class="w-12 text-center font-medium text-gray-800 cursor-pointer hover:bg-gray-100 rounded px-1 py-1 transition"
-                                x-text="item.quantity"
-                            ></span>
-
-                            <button
-                                @click="updateQuantity(item, 1)"
-                                @mousedown.prevent
-                                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-medium flex-shrink-0"
-                            >+</button>
+                    <!-- Item row -->
+                    <div class="grouped-list-item">
+                        <!-- Row 1: Name · Type + Price -->
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1 min-w-0 flex-1">
+                                <span class="font-medium truncate" x-text="getBaseName(item.name, item.item_type)"></span>
+                                <span class="text-gray-400">·</span>
+                                <span class="text-gray-500 text-sm truncate" x-text="item.item_type"></span>
+                            </div>
+                            <div class="font-semibold text-right pl-2 whitespace-nowrap" x-text="formatMoney(item.subtotal) + ' ₽'"></div>
                         </div>
-                        <div class="text-right">
-                            <div class="font-medium" x-text="formatMoney(item.subtotal) + ' ₽'"></div>
-                            <div class="text-xs text-gray-500" x-text="formatMoney(item.base_price) + ' × ' + item.quantity"></div>
+
+                        <!-- Row 2: Stepper + Details -->
+                        <div class="flex justify-between items-center mt-2">
+                            <!-- iOS Stepper -->
+                            <div class="ios-stepper">
+                                <button @click="updateQuantity(item, -1)" @mousedown.prevent>−</button>
+                                <span @click="openQuantityModal(item)" class="value" x-text="item.quantity"></span>
+                                <button @click="updateQuantity(item, 1)" @mousedown.prevent>+</button>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-500" x-text="formatMoney(item.base_price) + ' × ' + item.quantity"></span>
+                                <button @click="removeItem(item.id)" class="text-gray-400 hover:text-red-500 p-1 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -90,7 +86,7 @@
         </div>
 
         <template x-if="!loading && (!project?.items || project.items.length === 0)">
-            <div class="text-center py-8">
+            <div class="mx-4 my-4 grouped-list text-center py-8">
                 <div class="text-gray-400 text-4xl mb-3">📦</div>
                 <p class="text-gray-500">Нет позиций</p>
                 <p class="text-gray-400 text-sm">Найдите товар в каталоге или добавьте вручную</p>

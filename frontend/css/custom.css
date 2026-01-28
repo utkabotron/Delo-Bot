@@ -261,3 +261,62 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
+/* iOS Stepper */
+.ios-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(108, 117, 125, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--tg-section-bg-color);
+}
+
+.ios-stepper button {
+    width: 44px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tg-link-color);
+    font-size: 20px;
+    font-weight: 300;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.ios-stepper button:active {
+    background: var(--tg-secondary-bg-color);
+}
+
+.ios-stepper .value {
+    width: 48px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    color: var(--tg-text-color);
+    border-left: 1px solid rgba(108, 117, 125, 0.3);
+    border-right: 1px solid rgba(108, 117, 125, 0.3);
+    cursor: pointer;
+}
+
+/* Grouped list container */
+.grouped-list {
+    background: var(--tg-section-bg-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.grouped-list-item {
+    padding: 12px 16px;
+}
+
+.grouped-list-divider {
+    height: 1px;
+    background: rgba(108, 117, 125, 0.2);
+    margin-left: 16px;
+}
+
