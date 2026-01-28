@@ -30,6 +30,7 @@ function dashboard() {
     return {
         projects: [],
         loading: true,
+        syncing: false,
         showNewProjectModal: false,
         newProject: {
             name: '',
@@ -39,6 +40,22 @@ function dashboard() {
         async init() {
             tg.init();
             await this.loadProjects();
+        },
+
+        async syncCatalog() {
+            if (this.syncing) return;
+            this.syncing = true;
+            try {
+                const result = await api.catalog.sync();
+                tg.hapticFeedback('success');
+                alert(`Каталог обновлён: ${result.count} позиций`);
+            } catch (error) {
+                console.error('Failed to sync catalog:', error);
+                tg.hapticFeedback('error');
+                alert('Ошибка синхронизации каталога');
+            } finally {
+                this.syncing = false;
+            }
         },
 
         async loadProjects() {

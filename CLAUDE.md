@@ -9,7 +9,7 @@ Deloculator — Telegram Mini App для расчёта стоимости за�
 ## Tech Stack
 
 - **Backend:** Python + FastAPI (Clean Architecture)
-- **Database:** SQLite + SQLAlchemy
+- **Database:** SQLite + SQLAlchemy + Alembic (миграции)
 - **Frontend:** HTML5, Alpine.js, Tailwind CSS (CDN)
 - **Интеграция:** Google Sheets API для синхронизации каталога
 
@@ -20,43 +20,24 @@ Deloculator — Telegram Mini App для расчёта стоимости за�
 python -m venv venv
 source venv/bin/activate  # На Windows: venv\Scripts\activate
 pip install -r backend/requirements.txt
-
-# Создать .env файл (скопировать из backend/.env.example)
 cp backend/.env.example backend/.env
-# Настроить TELEGRAM_BOT_TOKEN, APP_PASSWORD, и credentials.json для Google Sheets
 
-# Запуск backend для разработки (из корня проекта)
+# Запуск backend
 cd backend && uvicorn app.main:app --reload
 
-# Или из корня без cd
-uvicorn backend.app.main:app --reload
+# Тесты
+cd backend && pytest                    # Все тесты
+cd backend && pytest tests/unit/        # Только unit тесты
+cd backend && pytest -v -k "test_name"  # Один тест
+cd backend && pytest --cov=app          # С coverage
 
-# Синхронизация каталога из Google Sheets
-python scripts/sync_catalog.py
+# Миграции БД (Alembic)
+cd backend && alembic upgrade head                              # Применить
+cd backend && alembic revision --autogenerate -m "Description"  # Создать новую
+cd backend && alembic downgrade -1                              # Откатить
 
-# Или через API
-curl -X POST -H "X-Auth-Password: your_password" http://localhost:8000/api/catalog/sync
-
-# Database migrations (Alembic)
-cd backend
-
-# Применить миграции (создать/обновить таблицы)
-alembic upgrade head
-
-# Создать новую миграцию после изменения моделей
-alembic revision --autogenerate -m "Description of changes"
-
-# Откатить последнюю миграцию
-alembic downgrade -1
-
-# Посмотреть текущую версию БД
-alembic current
-
-# История миграций
-alembic history
-
-# Проверка здоровья API
-curl http://localhost:8000/api/health
+# Синхронизация каталога
+curl -X POST -H "X-Auth-Password: password" http://localhost:8000/api/catalog/sync
 ```
 
 ## Clean Architecture
@@ -65,291 +46,105 @@ curl http://localhost:8000/api/health
 
 ```
 backend/app/
-├── domain/                    # Ядро: сущности и интерфейсы (без зависимостей)
-│   ├── entities/             # Project, ProjectItem, CatalogProduct
-│   └── repositories/         # Абстрактные интерфейсы (IProjectRepository, ICatalogRepository)
-├── application/               # Use Cases: бизнес-операции через интерфейсы domain
-│   ├── dto/                  # Data Transfer Objects для API
-│   └── use_cases/            # ProjectUseCases, CatalogUseCases
-├── infrastructure/            # Реализации: SQLAlchemy, Google Sheets, Telegram
-│   ├── persistence/          # SQLAlchemy модели и репозитории
-│   │   ├── models/           # ProjectModel, CatalogProductModel (ORM)
-│   │   └── repositories/     # SQLAlchemy реализации интерфейсов domain
-│   └── external/             # GoogleSheetsService, TelegramService
-└── presentation/              # API: FastAPI routers, получают Use Cases через DI
-    ├── api/                  # projects.py, catalog.py (routers)
-    └── middleware/           # AuthMiddleware, TelegramMiddleware
+├── domain/           # Ядро: сущности и интерфейсы (без зависимостей)
+│   ├── entities/     # Project, ProjectItem, CatalogProduct
+│   └── repositories/ # Абстрактные интерфейсы
+├── application/      # Use Cases: бизнес-операции
+│   ├── dto/          # Data Transfer Objects
+│   └── use_cases/    # ProjectUseCases, CatalogUseCases
+├── infrastructure/   # Реализации
+│   ├── persistence/  # SQLAlchemy модели и репозитории
+│   └── external/     # GoogleSheetsService
+├── presentation/     # FastAPI routers и middleware
+└── utils/            # Логирование, CSRF, password hashing
 ```
 
-**Domain** содержит бизнес-логику расчётов в entities (Project, ProjectItem). Репозитории — абстрактные интерфейсы.
-
-**Infrastructure** реализует интерфейсы domain. При добавлении нового хранилища — создать новую реализацию IProjectRepository.
-
-**Presentation** использует Dependency Injection через FastAPI Depends для получения Use Cases.
-
-**Важно:** При изменении domain entities также нужно обновить infrastructure/persistence/models (ORM) и application/dto.
+**Важно:** При изменении domain entities нужно также обновить:
+- `infrastructure/persistence/models/` (ORM)
+- `application/dto/`
+- Создать миграцию Alembic
 
 ## Формулы расчёта (domain/entities/project.py)
 
 ```python
-# Для каждой позиции (ProjectItem):
+# Для позиции:
 item.subtotal = base_price × quantity
 item.total_cost = cost_price × quantity
 
-# Для проекта (Project):
-subtotal = Σ(item.subtotal)                                    # Сумма всех позиций
-revenue = subtotal × (1 - discount/100) × (1 - tax/100)       # С учётом скидки и налога
-total_cost = Σ(item.total_cost)                                # Общая себестоимость
-profit = revenue - total_cost                                   # Чистая прибыль
-margin = (profit / revenue) × 100%                             # Рентабельность
+# Для проекта:
+subtotal = Σ(item.subtotal)
+revenue = subtotal × (1 - discount/100) × (1 - tax/100)
+profit = revenue - Σ(item.total_cost)
+margin = profit / revenue × 100%
 ```
 
-**Важно:** Скидка (`global_discount`) и налог (`global_tax`) — оба ВЫЧИТАЮТСЯ из суммы (оба множителя < 1).
-
-## Google Sheets
-
-Каталог синхронизируется из листа "Справочник Изделий":
-- **ID таблицы:** `18vDpWaCYA1rFhsyb54JhXXtR2b7RVsRplpiWZ93g1N8`
-- **Колонки:** C = Название, D = Тип, Q = Себестоимость, R = База (цена)
-- **Настройки:** `infrastructure/external/google_sheets.py`
-- **Credentials:** Требуется файл `credentials.json` от Google Service Account в корне проекта
-- **Синхронизация:** Можно запускать вручную через `scripts/sync_catalog.py` или через API
-
-## Аутентификация
-
-Простая аутентификация по паролю:
-- Пароль задаётся в `config.py` → `app_password` (по умолчанию: `deloculator2024`)
-- Frontend хранит пароль в `localStorage` и отправляет в заголовке `X-Auth-Password`
-- AuthMiddleware защищает только `/api/*` эндпоинты (кроме `/api/health`)
-- HTML-страницы публичные, но делают редирект на `/login` если нет пароля в localStorage
+Скидка и налог — оба ВЫЧИТАЮТСЯ из суммы.
 
 ## Frontend
 
 ```
 frontend/
-├── index.html      # Список проектов (dashboard) — Alpine.js component: dashboardApp
-├── project.html    # Редактор проекта — Alpine.js component: projectEditor
-├── login.html      # Страница входа — проверка пароля, редирект
-├── css/custom.css  # Кастомные стили + CSS переменные Telegram (--tg-theme-*)
+├── index.html      # Список проектов — Alpine.js: dashboard()
+├── project.html    # Редактор проекта — Alpine.js: projectEditor()
+├── login.html      # Страница входа
+├── css/custom.css  # Стили + CSS переменные Telegram
 └── js/
-    ├── api.js      # API клиент: fetch wrapper с X-Auth-Password header
-    ├── app.js      # Alpine.js компоненты:
-    │               # - dashboardApp: список проектов, создание/удаление
-    │               # - projectEditor: редактирование проекта, добавление позиций, расчёты
-    └── telegram.js # Telegram WebApp интеграция (tg.init, haptic, safe area)
+    ├── api.js      # Fetch wrapper с X-Auth-Password
+    ├── app.js      # Alpine.js компоненты
+    └── telegram.js # Telegram WebApp интеграция
 ```
 
-**Alpine.js компоненты:**
-- `dashboard()` — управление списком проектов (загрузка, создание, удаление)
-- `projectEditor()` — редактирование проекта (метаданные, позиции, поиск по каталогу)
-- Все расчёты (subtotal, revenue, profit, margin) происходят реактивно на клиенте
-
-**Редактирование количества (project.html):**
-- Клик по числу количества → открывает модальное окно (`showQuantityModal`)
-- Модалка использует `setTimeout()` для автофокуса (надёжнее чем `$nextTick`)
-- Input автоматически выделяет весь текст (`select()`) → клавиатура появляется сразу
-- Кнопки +/- для быстрых изменений, модалка для точного ввода больших чисел
-
-**Важно для Alpine.js:**
-- `x-show` НЕ работает надёжно внутри `x-for` — использовать `:class="condition ? 'hidden' : ''"` или `x-if` с `<template>`
-- Для доступа к элементам лучше использовать `document.getElementById()` чем `x-ref` (особенно в модалках)
-- События: `@blur` надёжнее чем `@change` на мобильных устройствах
+**Alpine.js особенности:**
+- `x-show` НЕ работает надёжно внутри `x-for` — использовать `:class="condition ? 'hidden' : ''"`
+- Для фокуса в модалках: `setTimeout(() => el.focus(), 100)` вместо `$nextTick`
+- События: `@blur` надёжнее чем `@change` на мобильных
 
 ## Telegram Mini App
 
 Интеграция через `telegram.js`:
-- `tg.init()` — инициализация (expand, theme, safe area)
-- `tg.applyTheme()` — автоматическое применение Telegram theme (светлая/тёмная)
-- `tg.applySafeArea()` — отступы под системные элементы Telegram
-- `tg.hapticFeedback(type)` — вибрация (light/medium/heavy/success/error)
-- `tg.showBackButton()` / `tg.hideBackButton()` — кнопка "назад"
+- `tg.init()` — expand, theme, safe area
+- `tg.hapticFeedback(type)` — вибрация
+- `tg.showBackButton()` / `tg.hideBackButton()`
 
-Настройка бота в @BotFather:
-- `/mybots` → выбрать бота → **Mini Apps** → **Menu Button**
-- URL: `https://delo.brdg.tools`
+CSS переменные Telegram в `custom.css`:
+- `--tg-bg-color`, `--tg-text-color`, `--tg-hint-color` и др.
+- Tailwind классы переопределены для использования Telegram theme
+- Для прозрачности границ использовать `rgba()`, НЕ `opacity`
 
-Токен бота хранится в `.env` → `TELEGRAM_BOT_TOKEN`
+## Аутентификация и безопасность
 
-### Темизация и Accessibility
-
-**CSS Переменные Telegram (`frontend/css/custom.css`):**
-- `--tg-bg-color` — основной фон
-- `--tg-section-bg-color` — фон карточек/секций
-- `--tg-secondary-bg-color` — вторичный фон (badges, disabled fields)
-- `--tg-text-color` — основной цвет текста
-- `--tg-subtitle-text-color` — цвет подзаголовков (#707070, контраст 4.54:1)
-- `--tg-hint-color` — цвет подсказок/hints (#6c757d, контраст 5.74:1)
-- `--tg-link-color` / `--tg-button-color` — цвет ссылок и кнопок
-
-**WCAG AA Compliance:**
-- Все текстовые цвета соответствуют минимальной контрастности 4.5:1
-- Использованы `rgba()` для прозрачности границ (НЕ `opacity` на элементе!)
-- Яркие цветные акценты (Apple-style):
-  - Прибыль: `#10b981` (ярко-зелёный)
-  - Убыток: `#ef4444` (ярко-красный)
-  - Скидки/Налоги: `#f97316` (оранжевый)
-
-**Важные CSS правила:**
-- Tailwind классы (bg-white, text-gray-*) переопределены для использования Telegram theme
-- `.border-*` использует `rgba()` для прозрачности, а НЕ `opacity` (чтобы не влиять на дочерние элементы)
-- Цветные акценты (`text-green-600`, `text-red-600`) всегда яркие через `!important`
-
-**Spacing и отступы (project.html):**
-- Main content: `p-4` (16px со всех сторон), `pb-60` (240px снизу под fixed panel)
-- Между карточками: `space-y-3` (12px) — сбалансировано с общими отступами 16px
-- Кнопка "Добавить": `mb-4` (16px снизу) — соответствует основным отступам
-- **Принцип:** Основные отступы 16px (p-4, mb-4), между элементами 12px (space-y-3)
+- Пароль в заголовке `X-Auth-Password`
+- Поддержка bcrypt хешей (backward compatible с plain text)
+- Rate limiting: 100 req/min глобально, 5 req/min для /api/catalog/sync
+- CSRF токены для мутирующих операций
+- Security headers (CSP, X-Frame-Options и др.)
 
 ## API Endpoints
 
-**Projects:**
-- `GET /api/projects` — список всех проектов
-- `POST /api/projects` — создание нового проекта
-- `GET /api/projects/{id}` — получение проекта с позициями
-- `PUT /api/projects/{id}` — обновление метаданных проекта
-- `DELETE /api/projects/{id}` — удаление проекта
-
-**Project Items:**
-- `POST /api/projects/{id}/items` — добавление позиции
-- `PATCH /api/projects/{project_id}/items/{item_id}` — обновление позиции (quantity)
-- `DELETE /api/projects/{project_id}/items/{item_id}` — удаление позиции
-
-**Catalog:**
-- `GET /api/catalog/search?q=название` — поиск по названию (для автодополнения)
-- `GET /api/catalog/grouped` — каталог, сгруппированный по названию
-- `POST /api/catalog/sync` — синхронизация с Google Sheets (требует X-Auth-Password)
-
-**Health:**
-- `GET /api/health` — проверка состояния API (публичный, без авторизации)
+**Projects:** `GET/POST /api/projects`, `GET/PUT/DELETE /api/projects/{id}`
+**Items:** `POST/PATCH/DELETE /api/projects/{id}/items/{item_id}`
+**Catalog:** `GET /api/catalog/search?q=`, `GET /api/catalog/grouped`, `POST /api/catalog/sync`
+**Health:** `GET /api/health` (публичный)
 
 ## Deployment
 
-- **Production URL:** https://delo.brdg.tools
-- **Server:** Timeweb Cloud VPS (176.57.214.150)
-- **Auto-deploy:** Push to `main` → GitHub Actions (.github/workflows/deploy.yml) → SSH deploy
-- **Server path:** `/opt/delo-bot`
-- **Systemd service:** `delo-bot.service`
+- **Production:** https://delo.brdg.tools
+- **Server:** Timeweb Cloud VPS, systemd service `delo-bot`
+- **Auto-deploy:** Push to `main` → GitHub Actions → SSH deploy + миграции
 
-**GitHub Actions Workflow:**
-1. Push в `main` триггерит deploy.yml
-2. SSH подключение к серверу (используя secrets: SERVER_HOST, SERVER_USER, SERVER_PASSWORD)
-3. `git pull origin main`
-4. `pip install -r backend/requirements.txt`
-5. **Бэкап БД:** Автоматическое создание `deloculator.db.backup_YYYYMMDD_HHMMSS`
-6. **Миграции:** `alembic upgrade head` (автоматически применяет новые миграции)
-7. `sudo systemctl restart delo-bot`
-
-Полезные команды на сервере:
 ```bash
-sudo journalctl -u delo-bot -f     # Логи в реальном времени
-sudo systemctl restart delo-bot    # Перезапуск сервиса
-sudo systemctl status delo-bot     # Статус сервиса
-curl -X POST -H 'X-Auth-Password: PASSWORD' http://127.0.0.1:8000/api/catalog/sync  # Синхронизация каталога
+# На сервере
+sudo journalctl -u delo-bot -f     # Логи
+sudo systemctl restart delo-bot    # Перезапуск
 ```
 
-## Важные детали реализации
+## CI/CD
 
-**Database:**
-- SQLite база данных: `data/deloculator.db`
-- Миграции управляются через **Alembic** (не `create_all()`!)
-- После изменения моделей в `infrastructure/persistence/models/`:
-  1. Создать миграцию: `cd backend && alembic revision --autogenerate -m "Description"`
-  2. Проверить сгенерированную миграцию в `backend/alembic/versions/`
-  3. Применить: `alembic upgrade head`
-- Используется SQLAlchemy ORM с декларативным стилем
-- **Deploy:** Миграции применяются автоматически при деплое (см. `.github/workflows/deploy.yml`)
+- `.github/workflows/ci.yml` — тесты на каждый push/PR
+- `.github/workflows/deploy.yml` — деплой при push в main
+- Деплой включает: backup БД → git pull → pip install → alembic upgrade → restart
 
-**Dependencies:**
-- Все Python зависимости в `backend/requirements.txt`
-- Frontend использует CDN: Alpine.js, Tailwind CSS — нет npm/webpack
-- Google Sheets API требует отдельной настройки credentials.json
+## Git
 
-**Environment Variables (.env):**
-- `TELEGRAM_BOT_TOKEN` — токен бота от @BotFather
-- `APP_PASSWORD` — пароль для доступа к API (по умолчанию: deloculator2024)
-- `GOOGLE_SHEETS_ID` — ID таблицы Google Sheets
-- `GOOGLE_CREDENTIALS_FILE` — путь к credentials.json
-- `CORS_ORIGINS` — разрешённые origins для CORS
-
-**Static Files:**
-- Backend отдаёт статику из `/frontend` через `StaticFiles` и `FileResponse`
-- CSS и JS монтируются как `/css` и `/js`
-- HTML страницы отдаются через routes: `/`, `/login`, `/project/{id}`
-
-## Распространённые проблемы и решения
-
-### Проблемы с темизацией
-
-**Проблема:** Текст не виден в тёмной теме Telegram
-- **Причина:** Hardcoded цвета вместо CSS переменных Telegram
-- **Решение:** Использовать `var(--tg-text-color)`, `var(--tg-hint-color)` и т.д.
-- **Файл:** `frontend/css/custom.css`
-
-**Проблема:** "Серая полупрозрачная плашка" или приглушённые цвета
-- **Причина:** Использование `opacity` на родительском элементе (наследуется на детей)
-- **Решение:** Использовать `rgba()` с альфа-каналом вместо `opacity`
-- **Пример:**
-  ```css
-  /* Плохо - делает весь элемент прозрачным */
-  .border-t {
-      border-color: #6c757d;
-      opacity: 0.35;
-  }
-
-  /* Хорошо - прозрачен только цвет границы */
-  .border-t {
-      border-color: rgba(108, 117, 125, 0.35);
-  }
-  ```
-
-**Проблема:** Контрастность не соответствует WCAG AA
-- **Требования:** Минимум 4.5:1 для обычного текста, 3:1 для крупного (18pt+)
-- **Инструменты:** WebAIM Contrast Checker, Chrome DevTools
-- **Решение:** Использовать более тёмные оттенки серого (#6c757d вместо #999999)
-
-### Проблемы с Alpine.js
-
-**Проблема:** Элементы не появляются/исчезают при использовании `x-show` внутри `x-for`
-- **Причина:** Alpine.js v3 плохо обрабатывает `x-show` в циклах
-- **Решение:** Использовать `:class="condition ? 'hidden' : ''"` или `x-if` с `<template>`
-- **Пример:** `<button :class="editingItemId === item.id ? 'hidden' : ''">+</button>`
-
-**Проблема:** Input не получает фокус автоматически в модалке
-- **Причина:** `$nextTick` не всегда работает с анимациями Alpine.js
-- **Решение:** Использовать `setTimeout(() => document.getElementById('id').focus(), 100)`
-- **Файл:** `frontend/js/app.js:328-340`
-
-**Проблема:** Клавиатура не появляется на мобильном при открытии модалки
-- **Причина:** Нет явного вызова `.focus()` на input
-- **Решение:** После открытия модалки вызвать `input.focus()` + `input.select()`
-
-### Проблемы с layout на мобильных
-
-**Проблема:** Summary panel "подпрыгивает" когда появляется клавиатура
-- **Причина:** `100vh` включает виртуальную клавиатуру, flex layout пересчитывается
-- **Решение:**
-  - Body: `height: 100dvh` (dynamic viewport height) с fallback `100vh`
-  - Summary panel: `position: fixed; bottom: 0` вместо `flex-shrink-0`
-  - Main content: достаточный `padding-bottom` (~240px для панели высотой 200px)
-- **Файлы:** `frontend/project.html:12,36,116`
-
-**Проблема:** Контент скрыт под фиксированным summary panel
-- **Причина:** Недостаточный `padding-bottom` у main content
-- **Решение:** Измерить высоту панели + добавить запас 20-40px. Например: `pb-60` (240px) для панели ~200px
-- **Файл:** `frontend/project.html:36`
-
-### Проблемы с deployment
-
-**Проблема:** Изменения не применяются после деплоя
-- **Решение:** Проверить что сервис перезапущен: `sudo systemctl status delo-bot`
-- **Проверить:** `git log -1` на сервере совпадает с локальным
-
-**Проблема:** CSS не обновляется в браузере
-- **Причина:** Кеш браузера
-- **Решение:** Hard refresh (Cmd+Shift+R на Mac, Ctrl+Shift+R на Windows)
-
-## Git Configuration
-
-- GitHub: https://github.com/utkabotron/Delo-Bot (public)
-- GitHub account: pavelbrick@gmail.com
-- **Важно:** Все коммиты должны быть от pavelbrick@gmail.com
+- GitHub: https://github.com/utkabotron/Delo-Bot
+- Коммиты от pavelbrick@gmail.com
