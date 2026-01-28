@@ -211,35 +211,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="button-group w-full mt-6">
+                <!-- Action buttons (Apple style) -->
+                <div class="mt-6 space-y-3">
+                    <button
+                        type="submit"
+                        class="w-full py-3.5 bg-blue-500 text-white font-semibold rounded-xl active:bg-blue-600 transition"
+                    >
+                        Сохранить
+                    </button>
                     <button
                         type="button"
                         @click="showSettingsModal = false"
-                        class="flex-1 px-4 py-3"
-                        style="color: var(--tg-text-color); opacity: 0.7;"
+                        class="w-full py-3.5 text-blue-500 font-medium rounded-xl active:bg-gray-100 transition"
                     >
                         Отмена
-                    </button>
-                    <button
-                        type="submit"
-                        class="flex-1 px-4 py-3 font-medium"
-                    >
-                        Сохранить
                     </button>
                 </div>
             </form>
             <!-- Delete project -->
-            <div class="border-t mt-6 pt-4">
+            <div class="mt-6 pt-4 border-t">
                 <button
                     type="button"
                     @click="deleteProject()"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-500 hover:bg-red-50 ios26-button transition"
+                    class="w-full py-3.5 text-red-500 font-medium rounded-xl active:bg-red-50 transition"
                 >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    <span class="font-medium">Удалить проект</span>
+                    Удалить проект
                 </button>
             </div>
         </div>
@@ -323,21 +319,21 @@
                             >
                         </div>
                     </div>
-                    <div class="button-group w-full mt-6">
-                        <button
-                            type="button"
-                            @click="showAddItemModal = false"
-                            class="flex-1 px-4 py-3"
-                            style="color: var(--tg-text-color); opacity: 0.7;"
-                        >
-                            Отмена
-                        </button>
+                    <!-- Action buttons (Apple style) -->
+                    <div class="mt-6 space-y-3">
                         <button
                             type="submit"
                             :disabled="!selectedType"
-                            class="flex-1 px-4 py-3 font-medium disabled:opacity-40"
+                            class="w-full py-3.5 bg-blue-500 text-white font-semibold rounded-xl active:bg-blue-600 transition disabled:opacity-40 disabled:active:bg-blue-500"
                         >
                             Добавить
+                        </button>
+                        <button
+                            type="button"
+                            @click="showAddItemModal = false"
+                            class="w-full py-3.5 text-blue-500 font-medium rounded-xl active:bg-gray-100 transition"
+                        >
+                            Отмена
                         </button>
                     </div>
                 </form>
@@ -387,20 +383,20 @@
                         >
                     </div>
                 </div>
-                <div class="button-group w-full mt-6">
+                <!-- Action buttons (Apple style) -->
+                <div class="mt-6 space-y-3">
+                    <button
+                        type="submit"
+                        class="w-full py-3.5 bg-blue-500 text-white font-semibold rounded-xl active:bg-blue-600 transition"
+                    >
+                        Сохранить
+                    </button>
                     <button
                         type="button"
                         @click="showQuantityModal = false"
-                        class="flex-1 px-4 py-3"
-                        style="color: var(--tg-text-color); opacity: 0.7;"
+                        class="w-full py-3.5 text-blue-500 font-medium rounded-xl active:bg-gray-100 transition"
                     >
                         Отмена
-                    </button>
-                    <button
-                        type="submit"
-                        class="flex-1 px-4 py-3 font-medium"
-                    >
-                        Сохранить
                     </button>
                 </div>
             </form>

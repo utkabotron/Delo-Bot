@@ -234,20 +234,20 @@
                         >
                     </div>
                 </div>
-                <div class="button-group w-full mt-6">
+                <!-- Action buttons (Apple style) -->
+                <div class="mt-6 space-y-3">
+                    <button
+                        type="submit"
+                        class="w-full py-3.5 bg-blue-500 text-white font-semibold rounded-xl active:bg-blue-600 transition"
+                    >
+                        Создать
+                    </button>
                     <button
                         type="button"
                         @click="showNewProjectModal = false"
-                        class="flex-1 px-4 py-3"
-                        style="color: var(--tg-text-color); opacity: 0.7;"
+                        class="w-full py-3.5 text-blue-500 font-medium rounded-xl active:bg-gray-100 transition"
                     >
                         Отмена
-                    </button>
-                    <button
-                        type="submit"
-                        class="flex-1 px-4 py-3 font-medium"
-                    >
-                        Создать
                     </button>
                 </div>
             </form>
