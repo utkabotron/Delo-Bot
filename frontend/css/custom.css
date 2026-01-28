@@ -427,3 +427,27 @@ input[type="number"] {
     margin-right: 16px;
 }
 
+/* iOS 26: Круглые icon buttons */
+.icon-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--tg-secondary-bg-color);
+    color: var(--tg-text-color);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.icon-button:active {
+    opacity: 0.7;
+}
+
+.icon-button-primary {
+    background: var(--tg-button-color);
+    color: var(--tg-button-text-color);
+}
+
