@@ -477,7 +477,9 @@ input[type="number"] {
         var(--tg-secondary-bg-color) 50%,
         rgba(247, 247, 247, 0) 100%
     );
-    padding-bottom: 8px;
+    padding-bottom: 16px;
+    position: relative;
+    z-index: 10;
 }
 
 /* iOS Navigation Bar (Apple HIG) */
