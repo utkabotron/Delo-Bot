@@ -427,36 +427,36 @@ input[type="number"] {
     margin-right: 16px;
 }
 
-/* iOS 26: Круглые icon buttons */
-.icon-button {
-    width: 36px;
-    height: 36px;
+/* iOS Navigation Bar (Apple HIG) */
+.ios-navbar {
+    background: var(--tg-section-bg-color);
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Nav buttons - 44x44 touch target (Apple HIG minimum) */
+.nav-button {
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: var(--tg-secondary-bg-color);
-    color: var(--tg-text-color);
+    background: transparent;
     border: none;
     cursor: pointer;
-    transition: opacity 0.15s;
+    color: var(--tg-link-color);
 }
 
-.icon-button:active {
-    opacity: 0.7;
+.nav-button:active {
+    opacity: 0.5;
 }
 
-.icon-button-primary {
-    background: var(--tg-button-color);
-    color: var(--tg-button-text-color);
+.nav-button-back {
+    padding-left: 8px;
+    justify-content: flex-start;
 }
 
-/* iOS 26: Title bubble (pill shape) */
-.title-bubble {
-    background: var(--tg-secondary-bg-color);
-    color: var(--tg-text-color);
-    border-radius: 9999px;
-    padding: 8px 16px;
-    text-align: center;
+.nav-button-action {
+    padding-right: 8px;
+    justify-content: flex-end;
 }
 
