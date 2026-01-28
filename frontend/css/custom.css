@@ -457,13 +457,9 @@ input[type="number"] {
 
 /* Header gradient background (fade out at bottom) */
 .header-gradient {
-    background: linear-gradient(
-        to bottom,
-        var(--tg-secondary-bg-color) 0%,
-        var(--tg-secondary-bg-color) 50%,
-        rgba(247, 247, 247, 0) 100%
-    );
-    padding-bottom: 8px;
+    background: rgba(247, 247, 247, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 /* iOS Navigation Bar (Apple HIG) */
