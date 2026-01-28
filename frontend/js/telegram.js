@@ -17,8 +17,8 @@ const tg = {
             this.app.disableVerticalSwipes();
         }
 
-        // Apply theme
-        this.applyTheme();
+        // Apply theme - DISABLED (always use light theme)
+        // this.applyTheme();
 
         // Apply safe area insets
         this.applySafeArea();
