@@ -227,8 +227,16 @@ html {
 /* Native iOS scrolling with bounce effect */
 .native-scroll {
     -webkit-overflow-scrolling: touch;
-    overflow-y: auto;
+    overflow-y: scroll;
     overscroll-behavior-y: auto;
+}
+
+/* Always enable scroll bounce even with little content */
+.native-scroll::after {
+    content: '';
+    display: block;
+    height: 1px;
+    margin-top: -1px;
 }
 
 /* Hide scrollbar but keep functionality */
