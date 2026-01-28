@@ -14,20 +14,13 @@
     <!-- Floating Header (как на главной) -->
     <header class="floating-nav flex-shrink-0 z-10 safe-top">
         <div class="px-4 py-3 flex items-center justify-between gap-2">
-            <!-- Left: Back + Title -->
-            <div class="flex items-center gap-2 min-w-0 flex-1">
-                <button @click="goBack()" class="text-blue-500 flex-shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <div
-                    @click="showSettingsModal = true"
-                    class="min-w-0 cursor-pointer active:opacity-50"
-                >
-                    <h1 class="text-lg font-bold text-gray-800 truncate" x-text="project?.name || 'Загрузка...'"></h1>
-                    <p class="text-sm text-gray-500 truncate" x-show="project?.client" x-text="project?.client"></p>
-                </div>
+            <!-- Left: Title (тап = настройки) -->
+            <div
+                @click="showSettingsModal = true"
+                class="min-w-0 flex-1 cursor-pointer active:opacity-50"
+            >
+                <h1 class="text-lg font-bold text-gray-800 truncate" x-text="project?.name || 'Загрузка...'"></h1>
+                <p class="text-sm text-gray-500 truncate" x-show="project?.client" x-text="project?.client"></p>
             </div>
             <!-- Right: Add button -->
             <div class="button-group">
