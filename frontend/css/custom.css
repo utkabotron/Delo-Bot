@@ -269,21 +269,22 @@ input[type="number"] {
 
 .swipe-content {
     position: relative;
-    width: 100%;
+    display: flex;
     transition: transform 0.2s ease-out;
-    z-index: 1;
-    background-color: var(--tg-section-bg-color);
 }
 
 .swipe-content.swiping {
     transition: none;
 }
 
+.swipe-card-content {
+    flex: 1;
+    min-width: 100%;
+    background-color: var(--tg-section-bg-color);
+}
+
 .swipe-delete-btn {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    flex-shrink: 0;
     width: 80px;
     background-color: #ef4444;
     color: white;
@@ -291,5 +292,6 @@ input[type="number"] {
     align-items: center;
     justify-content: center;
     font-weight: 500;
-    z-index: 0;  /* Кнопка ПОД контентом карточки */
+    border: none;
+    cursor: pointer;
 }
