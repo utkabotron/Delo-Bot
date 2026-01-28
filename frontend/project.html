@@ -136,7 +136,29 @@
         @click.self="showSettingsModal = false"
     >
         <div class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4">
-            <h2 class="text-xl font-bold mb-4">Настройки проекта</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold">Настройки проекта</h2>
+                <button
+                    type="button"
+                    @click="toggleArchive()"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition"
+                    :class="project?.is_archived ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'"
+                >
+                    <template x-if="!project?.is_archived">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
+                    </template>
+                    <template x-if="project?.is_archived">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                        </svg>
+                    </template>
+                    <span x-text="project?.is_archived ? 'Восстановить' : 'В архив'"></span>
+                </button>
+            </div>
             <form @submit.prevent="updateProject">
                 <div class="space-y-4">
                     <div>
@@ -206,31 +228,8 @@
                     </button>
                 </div>
             </form>
-            <!-- Archive / Unarchive project -->
-            <div class="border-t mt-6 pt-4">
-                <button
-                    type="button"
-                    @click="toggleArchive()"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-3 hover:bg-gray-50 ios26-button transition"
-                    :class="project?.is_archived ? 'text-green-600' : 'text-orange-500'"
-                >
-                    <template x-if="!project?.is_archived">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                        </svg>
-                    </template>
-                    <template x-if="project?.is_archived">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-                        </svg>
-                    </template>
-                    <span class="font-medium" x-text="project?.is_archived ? 'Разархивировать' : 'В архив'"></span>
-                </button>
-            </div>
             <!-- Delete project -->
-            <div class="border-t pt-4">
+            <div class="border-t mt-6 pt-4">
                 <button
                     type="button"
                     @click="deleteProject()"
