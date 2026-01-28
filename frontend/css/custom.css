@@ -40,21 +40,23 @@
     --tg-border-color: rgba(108, 117, 125, 0.35);  /* Light theme borders */
 }
 
-/* Dark theme support for browser (not Telegram) */
+/* Dark theme support for browser (not Telegram) - DISABLED */
+/*
 @media (prefers-color-scheme: dark) {
     :root {
         --tg-bg-color: #000000;
         --tg-text-color: #ffffff;
-        --tg-hint-color: #8e8e93;           /* iOS dark theme hint color */
-        --tg-link-color: #0a84ff;           /* iOS dark theme blue */
+        --tg-hint-color: #8e8e93;
+        --tg-link-color: #0a84ff;
         --tg-button-color: #0a84ff;
         --tg-button-text-color: #ffffff;
-        --tg-secondary-bg-color: #1c1c1e;   /* iOS dark theme secondary bg */
-        --tg-section-bg-color: #2c2c2e;     /* iOS dark theme grouped bg */
-        --tg-subtitle-text-color: #ebebf5;  /* iOS dark theme secondary label (60% opacity) */
-        --tg-border-color: rgba(84, 84, 88, 0.65);  /* iOS dark theme separator (opaque) */
+        --tg-secondary-bg-color: #1c1c1e;
+        --tg-section-bg-color: #2c2c2e;
+        --tg-subtitle-text-color: #ebebf5;
+        --tg-border-color: rgba(84, 84, 88, 0.65);
     }
 }
+*/
 
 /* Apply Telegram theme when available */
 body {
