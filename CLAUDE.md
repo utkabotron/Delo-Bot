@@ -132,22 +132,19 @@ CSS переменные Telegram в `custom.css`:
 - **Server:** Timeweb Cloud VPS (176.57.214.150), systemd service `delo-bot`
 - **SSH:** `ssh root@176.57.214.150` (доступ настроен)
 - **Server path:** `/opt/delo-bot`
-- **Auto-deploy:** Push to `main` → GitHub Actions → SSH deploy + миграции
 
 ```bash
+# Деплой
+ssh root@176.57.214.150 "cd /opt/delo-bot && git pull && sudo systemctl restart delo-bot"
+
 # На сервере
 sudo journalctl -u delo-bot -f     # Логи
 sudo systemctl restart delo-bot    # Перезапуск
-
-# Ручной деплой
-ssh root@176.57.214.150 "cd /opt/delo-bot && git pull && sudo systemctl restart delo-bot"
 ```
 
-## CI/CD
+## CI
 
 - `.github/workflows/ci.yml` — тесты на каждый push/PR
-- `.github/workflows/deploy.yml` — деплой при push в main
-- Деплой включает: backup БД → git pull → pip install → alembic upgrade → restart
 
 ## Git
 
