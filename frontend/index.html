@@ -173,7 +173,7 @@
                 <template x-for="(item, index) in filteredCatalog" :key="item.name + item.product_type">
                     <div>
                         <div :class="index > 0 ? 'grouped-list-divider' : ''"></div>
-                        <div class="grouped-list-item">
+                        <div class="grouped-list-item cursor-pointer active:bg-gray-50" @click="openCatalogDetail(item)">
                             <div class="flex justify-between items-start">
                                 <!-- Left: Name + Type -->
                                 <div class="flex-1 min-w-0">
@@ -251,6 +251,54 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Catalog Detail Modal -->
+    <div
+        x-show="showCatalogDetail"
+        x-transition
+        class="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
+        @click.self="showCatalogDetail = false"
+    >
+        <div class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xl font-bold" x-text="selectedCatalogItem?.base_name"></h2>
+                    <p class="text-sm text-gray-500" x-text="selectedCatalogItem?.product_type"></p>
+                </div>
+                <button
+                    @click="showCatalogDetail = false"
+                    class="p-2 text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Prices -->
+            <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600">База (цена)</span>
+                    <span class="font-bold text-lg" x-text="formatMoney(selectedCatalogItem?.base_price) + ' ₽'"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Себестоимость</span>
+                    <span class="font-bold text-lg" x-text="formatMoney(selectedCatalogItem?.cost_price) + ' ₽'"></span>
+                </div>
+            </div>
+
+            <!-- Cost Breakdown -->
+            <h3 class="font-semibold text-gray-700 mb-3">Состав себестоимости</h3>
+            <div class="space-y-2">
+                <template x-for="comp in getCostBreakdown()" :key="comp.label">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100" x-show="comp.value > 0">
+                        <span class="text-gray-600" x-text="comp.label"></span>
+                        <span class="font-medium" x-text="formatMoney(comp.value) + ' ₽'"></span>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 

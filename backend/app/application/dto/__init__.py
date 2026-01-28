@@ -7,7 +7,7 @@ from app.application.dto.project_dto import (
     ProjectItemResponseDTO,
     ProjectSummaryDTO,
 )
-from app.application.dto.catalog_dto import CatalogProductDTO, CatalogProductGroupedDTO
+from app.application.dto.catalog_dto import CatalogProductDTO, CatalogProductGroupedDTO, CostBreakdownDTO
 
 __all__ = [
     "ProjectCreateDTO",
@@ -19,4 +19,5 @@ __all__ = [
     "ProjectSummaryDTO",
     "CatalogProductDTO",
     "CatalogProductGroupedDTO",
+    "CostBreakdownDTO",
 ]

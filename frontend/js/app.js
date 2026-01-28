@@ -124,6 +124,8 @@ function dashboard() {
             name: '',
             type: '',
         },
+        showCatalogDetail: false,
+        selectedCatalogItem: null,
 
         async init() {
             tg.init();
@@ -204,6 +206,32 @@ function dashboard() {
             }
 
             this.filteredCatalog = items;
+        },
+
+        openCatalogDetail(item) {
+            this.selectedCatalogItem = item;
+            this.showCatalogDetail = true;
+            tg.hapticFeedback('light');
+        },
+
+        getCostBreakdown() {
+            const item = this.selectedCatalogItem;
+            if (!item || !item.cost_breakdown) return [];
+            const b = item.cost_breakdown;
+            return [
+                { label: 'Материалы', value: b.materials },
+                { label: 'Металл каркас', value: b.metal },
+                { label: 'Порошок', value: b.powder },
+                { label: 'ЧПУ', value: b.cnc },
+                { label: 'Столярка', value: b.carpentry },
+                { label: 'Малярка', value: b.painting },
+                { label: 'Обивка', value: b.upholstery },
+                { label: 'Комплектующие', value: b.components },
+                { label: 'Коробка', value: b.box },
+                { label: 'Логистика', value: b.logistics },
+                { label: 'Сборка', value: b.assembly },
+                { label: 'Прочее', value: b.other },
+            ];
         },
 
         async createProject() {

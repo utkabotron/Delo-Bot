@@ -1,6 +1,6 @@
 from app.domain.entities import CatalogProduct
 from app.domain.repositories import ICatalogRepository
-from app.application.dto import CatalogProductDTO, CatalogProductGroupedDTO
+from app.application.dto import CatalogProductDTO, CatalogProductGroupedDTO, CostBreakdownDTO
 
 
 class CatalogUseCases:
@@ -37,6 +37,20 @@ class CatalogUseCases:
                 product_type=p.product_type,
                 base_price=p.base_price,
                 cost_price=p.cost_price,
+                cost_breakdown=CostBreakdownDTO(
+                    materials=p.cost_materials,
+                    metal=p.cost_metal,
+                    powder=p.cost_powder,
+                    cnc=p.cost_cnc,
+                    carpentry=p.cost_carpentry,
+                    painting=p.cost_painting,
+                    upholstery=p.cost_upholstery,
+                    components=p.cost_components,
+                    box=p.cost_box,
+                    logistics=p.cost_logistics,
+                    assembly=p.cost_assembly,
+                    other=p.cost_other,
+                ),
             )
             for p in products
         ]
