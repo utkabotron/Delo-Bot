@@ -260,3 +260,34 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
 }
+
+/* Swipe to delete */
+.swipe-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.swipe-content {
+    position: relative;
+    transition: transform 0.2s ease-out;
+    z-index: 1;
+    background-color: var(--tg-section-bg-color);
+}
+
+.swipe-content.swiping {
+    transition: none;
+}
+
+.swipe-delete-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    background-color: #ef4444;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}

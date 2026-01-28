@@ -1,5 +1,83 @@
 // Alpine.js Components
 
+// Swipe to delete functionality
+let currentOpenSwipe = null;
+
+function initSwipe(el, onDelete) {
+    let startX = 0;
+    let currentX = 0;
+    let isSwiping = false;
+    const content = el.querySelector('.swipe-content');
+    const threshold = 60;
+    const deleteThreshold = 150;
+
+    function closeSwipe() {
+        content.style.transform = 'translateX(0)';
+    }
+
+    function openSwipe() {
+        content.style.transform = 'translateX(-80px)';
+    }
+
+    el.addEventListener('touchstart', (e) => {
+        // Close any other open swipe
+        if (currentOpenSwipe && currentOpenSwipe !== el) {
+            const otherContent = currentOpenSwipe.querySelector('.swipe-content');
+            if (otherContent) {
+                otherContent.style.transform = 'translateX(0)';
+            }
+        }
+
+        startX = e.touches[0].clientX;
+        currentX = startX;
+        isSwiping = true;
+        content.classList.add('swiping');
+    }, { passive: true });
+
+    el.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        currentX = e.touches[0].clientX;
+        const diff = Math.min(0, Math.max(-deleteThreshold, currentX - startX));
+        content.style.transform = `translateX(${diff}px)`;
+    }, { passive: true });
+
+    el.addEventListener('touchend', () => {
+        isSwiping = false;
+        content.classList.remove('swiping');
+        const diff = currentX - startX;
+
+        if (diff < -deleteThreshold) {
+            // Auto-delete on strong swipe
+            tg.hapticFeedback('medium');
+            onDelete();
+        } else if (diff < -threshold) {
+            // Show delete button
+            openSwipe();
+            currentOpenSwipe = el;
+        } else {
+            // Return to place
+            closeSwipe();
+            if (currentOpenSwipe === el) {
+                currentOpenSwipe = null;
+            }
+        }
+    });
+
+    // Store close function on element for external use
+    el._closeSwipe = closeSwipe;
+}
+
+// Close open swipe when clicking elsewhere
+document.addEventListener('touchstart', (e) => {
+    if (currentOpenSwipe && !currentOpenSwipe.contains(e.target)) {
+        const content = currentOpenSwipe.querySelector('.swipe-content');
+        if (content) {
+            content.style.transform = 'translateX(0)';
+        }
+        currentOpenSwipe = null;
+    }
+}, { passive: true });
+
 function formatMoney(value) {
     const num = parseFloat(value) || 0;
     return num.toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -85,8 +163,6 @@ function dashboard() {
         },
 
         async deleteProject(id) {
-            if (!confirm('Удалить проект?')) return;
-
             try {
                 await api.projects.delete(id);
                 this.projects = this.projects.filter(p => p.id !== id);
@@ -95,6 +171,10 @@ function dashboard() {
                 console.error('Failed to delete project:', error);
                 tg.hapticFeedback('error');
             }
+        },
+
+        initSwipeProject(el, projectId) {
+            initSwipe(el, () => this.deleteProject(projectId));
         },
 
         openProject(id) {
@@ -295,6 +375,10 @@ function projectEditor() {
                 console.error('Failed to remove item:', error);
                 tg.hapticFeedback('error');
             }
+        },
+
+        initSwipeItem(el, itemId) {
+            initSwipe(el, () => this.removeItem(itemId));
         },
 
         async updateQuantity(item, delta) {
