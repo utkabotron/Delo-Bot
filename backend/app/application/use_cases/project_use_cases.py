@@ -167,17 +167,15 @@ class ProjectUseCases:
 
         lines.append(f"Подытог: {self._format_money(project.subtotal)} ₽")
 
+        # Calculate total for client (without tax)
+        client_total = project.subtotal * (Decimal("1") - project.global_discount / Decimal("100"))
+
         if project.global_discount > 0:
             discount_amount = project.subtotal * project.global_discount / Decimal("100")
             lines.append(f"Скидка ({project.global_discount}%): -{self._format_money(discount_amount)} ₽")
 
-        if project.global_tax > 0:
-            after_discount = project.subtotal * (Decimal("1") - project.global_discount / Decimal("100"))
-            tax_amount = after_discount * project.global_tax / Decimal("100")
-            lines.append(f"Налог ({project.global_tax}%): -{self._format_money(tax_amount)} ₽")
-
         lines.append("")
-        lines.append(f"💰 Итого: {self._format_money(project.revenue)} ₽")
+        lines.append(f"💰 Итого: {self._format_money(client_total)} ₽")
 
         return "\n".join(lines)
 
@@ -274,18 +272,16 @@ class ProjectUseCases:
             elements.append(table)
             elements.append(Spacer(1, 5*mm))
 
-        # Summary
+        # Summary (without tax for client)
+        client_total = project.subtotal * (Decimal("1") - project.global_discount / Decimal("100"))
+
         summary_data = [
             ["Подытог:", f"{self._format_money(project.subtotal)} ₽"],
         ]
         if project.global_discount > 0:
             discount_amount = project.subtotal * project.global_discount / Decimal("100")
             summary_data.append([f"Скидка ({project.global_discount}%):", f"-{self._format_money(discount_amount)} ₽"])
-        if project.global_tax > 0:
-            after_discount = project.subtotal * (Decimal("1") - project.global_discount / Decimal("100"))
-            tax_amount = after_discount * project.global_tax / Decimal("100")
-            summary_data.append([f"Налог ({project.global_tax}%):", f"-{self._format_money(tax_amount)} ₽"])
-        summary_data.append(["Итого:", f"{self._format_money(project.revenue)} ₽"])
+        summary_data.append(["Итого:", f"{self._format_money(client_total)} ₽"])
 
         summary_table = Table(summary_data, colWidths=[140*mm, 30*mm])
         summary_table.setStyle(TableStyle([
