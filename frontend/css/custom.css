@@ -231,12 +231,14 @@ html {
     overscroll-behavior-y: auto;
 }
 
-/* Always enable scroll bounce even with little content */
-.native-scroll::after {
-    content: '';
-    display: block;
-    height: 1px;
-    margin-top: -1px;
+/* Wrapper inside native-scroll to enable bounce with little content */
+.native-scroll > *:last-child {
+    margin-bottom: 1px;
+}
+
+/* Force minimum scrollable area */
+.scroll-content {
+    min-height: calc(100% + 1px);
 }
 
 /* Hide scrollbar but keep functionality */

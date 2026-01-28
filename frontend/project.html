@@ -36,6 +36,7 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto native-scroll pb-60">
+        <div class="scroll-content">
         <!-- Items List — Grouped container (iOS 26: 16px inset) -->
         <div class="ios26-inset mb-4 grouped-list" x-show="project?.items?.length > 0">
             <template x-for="(item, index) in project?.items || []" :key="item.id">
@@ -69,6 +70,7 @@
                 <p class="text-gray-400 text-sm">Найдите товар в каталоге или добавьте вручную</p>
             </div>
         </template>
+        </div>
     </main>
 
     <!-- Summary Panel (iOS 26 style) -->
