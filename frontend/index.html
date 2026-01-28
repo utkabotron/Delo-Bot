@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/custom.css">
 </head>
-<body class="bg-gray-100 min-h-screen" x-data="dashboard()" x-init="init()">
+<body class="bg-gray-100 flex flex-col overflow-hidden" style="height: 100dvh; height: 100vh;" x-data="dashboard()" x-init="init()">
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header (Apple Large Title style) -->
     <header class="sticky top-0 z-10 safe-top header-gradient">
@@ -41,7 +41,7 @@
     </header>
 
     <!-- Projects List -->
-    <main class="pb-20">
+    <main class="pb-20 native-scroll flex-1 overflow-y-auto">
         <template x-if="loading">
             <div class="flex justify-center py-8">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>

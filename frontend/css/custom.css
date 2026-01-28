@@ -208,9 +208,13 @@ span.text-orange-600 {
     /* Color already defined above, just ensure it's not overridden */
 }
 
-/* Prevent pull-to-refresh on mobile */
-html, body {
-    overscroll-behavior: none;
+/* Allow bounce scroll on body but prevent pull-to-refresh */
+html {
+    overscroll-behavior-x: none;
+}
+
+body {
+    overscroll-behavior: auto;
 }
 
 /* Smooth scrolling and dynamic viewport height */
@@ -220,11 +224,11 @@ html {
     height: 100vh; /* Fallback for older browsers */
 }
 
-/* Native iOS scrolling */
+/* Native iOS scrolling with bounce effect */
 .native-scroll {
     -webkit-overflow-scrolling: touch;
     overflow-y: auto;
-    overscroll-behavior-y: contain;
+    overscroll-behavior-y: auto;
 }
 
 /* Hide scrollbar but keep functionality */
