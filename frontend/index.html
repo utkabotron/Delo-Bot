@@ -196,21 +196,11 @@
     <!-- New Project Modal (iOS 26 style) -->
     <div
         x-show="showNewProjectModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
+        x-transition
         class="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
         @click.self="showNewProjectModal = false"
     >
-        <div
-            class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95"
-            x-transition:enter-end="translate-y-0 sm:scale-100"
-        >
+        <div class="bg-white w-full sm:max-w-md ios26-modal-bottom sm:ios26-modal p-6 mx-0 sm:mx-4">
             <h2 class="text-xl font-bold mb-4">Новый проект</h2>
             <form @submit.prevent="createProject">
                 <div class="space-y-4">
