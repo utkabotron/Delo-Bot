@@ -40,8 +40,9 @@ const api = {
 
     // Projects
     projects: {
-        list() {
-            return api.request('/projects');
+        list(includeArchived = false) {
+            const params = includeArchived ? '?include_archived=true' : '';
+            return api.request(`/projects${params}`);
         },
 
         get(id) {
@@ -86,6 +87,32 @@ const api = {
                 method: 'PATCH',
                 body: JSON.stringify({ quantity }),
             });
+        },
+
+        async export(projectId, format = 'text') {
+            const password = localStorage.getItem('app_password');
+            const headers = {};
+            if (password) {
+                headers['X-Auth-Password'] = password;
+            }
+            const response = await fetch(`${API_BASE}/projects/${projectId}/export?format=${format}`, { headers });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.text();
+        },
+
+        async exportPdf(projectId) {
+            const password = localStorage.getItem('app_password');
+            const headers = {};
+            if (password) {
+                headers['X-Auth-Password'] = password;
+            }
+            const response = await fetch(`${API_BASE}/projects/${projectId}/export?format=pdf`, { headers });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.blob();
         },
     },
 

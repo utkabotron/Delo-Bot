@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse, PlainTextResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.application.dto import (
@@ -21,8 +22,11 @@ def get_use_cases(db: Session = Depends(get_db)) -> ProjectUseCases:
 
 
 @router.get("", response_model=list[ProjectResponseDTO])
-def get_projects(use_cases: ProjectUseCases = Depends(get_use_cases)):
-    return use_cases.get_all_projects()
+def get_projects(
+    include_archived: bool = Query(False, description="Include archived projects"),
+    use_cases: ProjectUseCases = Depends(get_use_cases),
+):
+    return use_cases.get_all_projects(include_archived=include_archived)
 
 
 @router.post("", response_model=ProjectResponseDTO, status_code=201)
@@ -95,3 +99,25 @@ def remove_item(
 ):
     if not use_cases.remove_item(item_id):
         raise HTTPException(status_code=404, detail="Item not found")
+
+
+@router.get("/{project_id}/export")
+def export_project(
+    project_id: int,
+    format: str = Query("text", description="Export format: 'text' or 'pdf'"),
+    use_cases: ProjectUseCases = Depends(get_use_cases),
+):
+    if format == "pdf":
+        pdf_buffer = use_cases.export_to_pdf(project_id)
+        if not pdf_buffer:
+            raise HTTPException(status_code=404, detail="Project not found")
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=project_{project_id}.pdf"},
+        )
+    else:
+        text = use_cases.export_to_text(project_id)
+        if not text:
+            raise HTTPException(status_code=404, detail="Project not found")
+        return PlainTextResponse(content=text)

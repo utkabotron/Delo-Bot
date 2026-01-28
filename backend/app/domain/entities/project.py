@@ -32,6 +32,8 @@ class Project:
     global_tax: Decimal = Decimal("0")
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     items: list[ProjectItem] = field(default_factory=list)
+    notes: str = ""
+    is_archived: bool = False
 
     @property
     def subtotal(self) -> Decimal:

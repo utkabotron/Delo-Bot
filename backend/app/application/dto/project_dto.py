@@ -42,6 +42,7 @@ class ProjectCreateDTO(BaseModel):
     client: str = ""
     global_discount: Decimal = Field(default=Decimal("0"), ge=0, le=100)
     global_tax: Decimal = Field(default=Decimal("0"), ge=0)
+    notes: str = ""
 
 
 class ProjectUpdateDTO(BaseModel):
@@ -49,6 +50,8 @@ class ProjectUpdateDTO(BaseModel):
     client: str | None = None
     global_discount: Decimal | None = Field(default=None, ge=0, le=100)
     global_tax: Decimal | None = Field(default=None, ge=0)
+    notes: str | None = None
+    is_archived: bool | None = None
 
 
 class ProjectResponseDTO(BaseModel):
@@ -60,6 +63,8 @@ class ProjectResponseDTO(BaseModel):
     created_at: datetime
     items: list[ProjectItemResponseDTO] = []
     summary: ProjectSummaryDTO
+    notes: str = ""
+    is_archived: bool = False
 
     class Config:
         from_attributes = True

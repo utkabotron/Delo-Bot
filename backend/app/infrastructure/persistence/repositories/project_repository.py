@@ -31,16 +31,19 @@ class SQLAlchemyProjectRepository(IProjectRepository):
             global_tax=Decimal(str(model.global_tax)),
             created_at=model.created_at,
             items=items,
+            notes=model.notes or "",
+            is_archived=model.is_archived or False,
         )
 
-    def get_all(self) -> list[Project]:
+    def get_all(self, include_archived: bool = False) -> list[Project]:
         # Use joinedload to prevent N+1 queries when accessing items
-        models = (
+        query = (
             self.db.query(ProjectModel)
             .options(joinedload(ProjectModel.items))
-            .order_by(ProjectModel.created_at.desc())
-            .all()
         )
+        if not include_archived:
+            query = query.filter(ProjectModel.is_archived == False)
+        models = query.order_by(ProjectModel.created_at.desc()).all()
         return [self._to_entity(m) for m in models]
 
     def get_by_id(self, project_id: int) -> Optional[Project]:
@@ -61,6 +64,8 @@ class SQLAlchemyProjectRepository(IProjectRepository):
             client=project.client,
             global_discount=project.global_discount,
             global_tax=project.global_tax,
+            notes=project.notes,
+            is_archived=project.is_archived,
         )
         self.db.add(model)
         self.db.commit()
@@ -80,6 +85,8 @@ class SQLAlchemyProjectRepository(IProjectRepository):
             model.client = project.client
             model.global_discount = project.global_discount
             model.global_tax = project.global_tax
+            model.notes = project.notes
+            model.is_archived = project.is_archived
             self.db.commit()
             # Reload with items to prevent N+1 if accessed later
             model = (

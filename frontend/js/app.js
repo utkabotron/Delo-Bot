@@ -109,6 +109,7 @@ function dashboard() {
         projects: [],
         loading: true,
         syncing: false,
+        showArchived: false,
         showNewProjectModal: false,
         newProject: {
             name: '',
@@ -139,7 +140,7 @@ function dashboard() {
         async loadProjects() {
             this.loading = true;
             try {
-                this.projects = await api.projects.list();
+                this.projects = await api.projects.list(this.showArchived);
             } catch (error) {
                 console.error('Failed to load projects:', error);
             } finally {
@@ -194,6 +195,7 @@ function projectEditor() {
         showSettingsModal: false,
         showAddItemModal: false,
         showQuantityModal: false,
+        showExportModal: false,
         showSearchResults: false,
         searchQuery: '',
         searchResults: [],
@@ -238,6 +240,7 @@ function projectEditor() {
                     client: this.project.client,
                     global_discount: this.project.global_discount,
                     global_tax: this.project.global_tax,
+                    notes: this.project.notes || '',
                 };
             } catch (error) {
                 console.error('Failed to load project:', error);
@@ -492,6 +495,54 @@ function projectEditor() {
             } catch (error) {
                 console.error('Failed to delete project:', error);
                 tg.hapticFeedback('error');
+            }
+        },
+
+        async toggleArchive() {
+            try {
+                await api.projects.update(this.project.id, {
+                    is_archived: !this.project.is_archived
+                });
+                this.showSettingsModal = false;
+                tg.hapticFeedback('success');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Failed to toggle archive:', error);
+                tg.hapticFeedback('error');
+            }
+        },
+
+        async exportTelegram() {
+            try {
+                const text = await api.projects.export(this.project.id, 'text');
+                await navigator.clipboard.writeText(text);
+                tg.hapticFeedback('success');
+                this.showExportModal = false;
+                alert('Текст скопирован в буфер обмена');
+            } catch (error) {
+                console.error('Failed to export to Telegram:', error);
+                tg.hapticFeedback('error');
+                alert('Ошибка экспорта');
+            }
+        },
+
+        async exportPdf() {
+            try {
+                const blob = await api.projects.exportPdf(this.project.id);
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${this.project.name || 'project'}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                tg.hapticFeedback('success');
+                this.showExportModal = false;
+            } catch (error) {
+                console.error('Failed to export to PDF:', error);
+                tg.hapticFeedback('error');
+                alert('Ошибка экспорта PDF');
             }
         },
 

@@ -13,7 +13,7 @@
     <script>if (!localStorage.getItem('app_password')) window.location.href = '/login';</script>
     <!-- Header (Apple Large Title style) -->
     <header class="sticky top-0 z-10 safe-top header-gradient">
-        <div class="px-4 pt-6 pb-4 flex items-center justify-between gap-4">
+        <div class="px-4 pt-6 pb-2 flex items-center justify-between gap-4">
             <!-- Left: Large Title -->
             <h1 class="text-2xl font-bold text-gray-800 truncate pl-2">Проекты</h1>
             <!-- Right: Sync + Add buttons -->
@@ -38,6 +38,25 @@
                 </button>
             </div>
         </div>
+        <!-- Filter tabs -->
+        <div class="px-4 pb-4">
+            <div class="button-group">
+                <button
+                    @click="showArchived = false; loadProjects()"
+                    class="flex-1 px-4 py-2 text-sm font-medium transition"
+                    :class="!showArchived ? 'bg-blue-500 text-white' : 'text-gray-600'"
+                >
+                    Активные
+                </button>
+                <button
+                    @click="showArchived = true; loadProjects()"
+                    class="flex-1 px-4 py-2 text-sm font-medium transition"
+                    :class="showArchived ? 'bg-blue-500 text-white' : 'text-gray-600'"
+                >
+                    Архив
+                </button>
+            </div>
+        </div>
     </header>
 
     <!-- Projects List -->
@@ -48,11 +67,19 @@
             </div>
         </template>
 
-        <template x-if="!loading && projects.length === 0">
+        <template x-if="!loading && projects.length === 0 && !showArchived">
             <div class="text-center py-12">
                 <div class="text-gray-400 text-5xl mb-4">📋</div>
                 <p class="text-gray-500">Нет проектов</p>
                 <p class="text-gray-400 text-sm mt-1">Создайте первый проект</p>
+            </div>
+        </template>
+
+        <template x-if="!loading && projects.length === 0 && showArchived">
+            <div class="text-center py-12">
+                <div class="text-gray-400 text-5xl mb-4">📦</div>
+                <p class="text-gray-500">Архив пуст</p>
+                <p class="text-gray-400 text-sm mt-1">Архивные проекты появятся здесь</p>
             </div>
         </template>
 

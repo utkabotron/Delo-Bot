@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from app.database import Base
@@ -13,6 +13,8 @@ class ProjectModel(Base):
     global_discount = Column(Numeric(10, 2), default=0)
     global_tax = Column(Numeric(10, 2), default=0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)  # Index for sorting
+    notes = Column(String, default="")
+    is_archived = Column(Boolean, default=False, index=True)
 
     items = relationship(
         "ProjectItemModel", back_populates="project", cascade="all, delete-orphan"

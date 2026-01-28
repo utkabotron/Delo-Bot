@@ -5,7 +5,7 @@ from app.domain.entities import Project, ProjectItem
 
 class IProjectRepository(ABC):
     @abstractmethod
-    def get_all(self) -> list[Project]:
+    def get_all(self, include_archived: bool = False) -> list[Project]:
         pass
 
     @abstractmethod
